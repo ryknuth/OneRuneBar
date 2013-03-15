@@ -1,0 +1,20 @@
+## Interface: 50200
+## Title: Three Rune Bars
+## Author: McZ 
+## Version: 5.2.0
+## SavedVariables: TRB_Config
+## Notes: Simple 3 Rune bar display. Combines the 2 runes of the same type into one energy like bar.
+## OptionalDeps: LibSharedMedia-3.0
+
+TRB_Config.lua
+
+TRB_Module.lua
+
+ThreeRuneBars.lua
+
+TRB_Runes.lua
+TRB_RunicPower.lua
+TRB_Diseases.lua
+TRB_HornOfWinter.lua
+
+TRB_Options.lua
