@@ -125,7 +125,7 @@ function ThreeRuneBars:StartModules()
 end
 
 function ThreeRuneBars:ADDON_LOADED(addon)
-	if( addon == "ThreeRuneBars" and (select(2, UnitClass("player")) == "DEATHKNIGHT")) then
+	if( string.lower(addon) == string.lower("ThreeRuneBars") and (select(2, UnitClass("player")) == "DEATHKNIGHT")) then
 		--
 		--	And finally the addon and it's variables has been loaded and we can start doing stuff
 		--	
