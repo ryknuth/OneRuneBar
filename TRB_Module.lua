@@ -253,6 +253,7 @@ function TRB_Module:InitOptions(parent)
 	slider:Show();
 	self.ScaleSlider = slider;
 
+	-- Texture options
 	local textureText = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight");
 	textureText:SetPoint("TOPLEFT", panel, "TOPLEFT", xoff+260, yoff-77);
 	textureText:SetText("Texture");
@@ -312,11 +313,38 @@ function TRB_Module:InitOptions(parent)
 	self.panel = panel;
 	InterfaceOptions_AddCategory(self.panel);
 end
---[[
-function TRB_Module:SetScale(value)
-	self.frame:SetScale(value);
+
+function TRB_Module:CreateColorButtonOption(panel, name, x, y)
+	local btn = CreateFrame("button", self.name..name.."button", panel, "UIPanelButtonTemplate");
+	btn.owner = self;
+	btn.trbcolorname = name;
+	btn:SetPoint("TOPLEFT", panel, "TOPLEFT", x, y);
+	btn:SetWidth(80);
+	btn:SetHeight(22);
+	btn:SetText(name);
+	btn:SetScript("OnClick", function(self) 
+								ColorPickerFrame.previousValues = { self.owner:GetConfigColor(self.owner, self.trbcolorname) };
+								ColorPickerFrame.func = function() self.owner:SetBarColor(self.owner, self.trbcolorname, ColorPickerFrame:GetColorRGB()) end;
+								ColorPickerFrame.opacityFunc = function() self.owner:SetBarColor(self.owner, self.trbcolorname, ColorPickerFrame:GetColorRGB()); end;
+								ColorPickerFrame.cancelFunc = function() self.owner:SetBarColor(self.owner, self.trbcolorname, unpack(ColorPickerFrame.previousValues)); end;
+								ColorPickerFrame:SetColorRGB( self.owner:GetConfigColor(self.owner, self.trbcolorname) );
+								ColorPickerFrame:SetFrameStrata("DIALOG");
+								ColorPickerFrame:Show();
+							 end);
+
+	local tex = panel:CreateTexture(nil, "BACKGROUND");
+	tex:SetWidth(20);
+	tex:SetHeight(20);
+	tex:SetPoint("LEFT", btn, "RIGHT", 10, 0);
+	tex:SetTexture( self:GetConfigColor(self, name) );
+
+	if( not panel.barcolor ) then
+		panel.barcolor = {};
+	end
+
+	panel.barcolor[name] = tex;
 end
---]]
+
 function TRB_Module:_OnOkay()
 
 	-- Scale

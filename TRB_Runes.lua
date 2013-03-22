@@ -801,126 +801,18 @@ function TRB_Runes:OnInitOptions(panel)
 	end
 	cb:SetChecked( v );
 	self.CB_DisableText = cb;
-	
+
 	---
 	--- Color buttons
 	---
-	--- Blood
-	local btn = CreateFrame("button", "mybutton", panel, "UIPanelButtonTemplate");
-	btn.owner = self;
-	btn:SetPoint("TOPLEFT", panel, "TOPLEFT", 20, -300);
-	btn:SetWidth(80);
-	btn:SetHeight(22);
-	btn:SetText("Blood");
-	btn:SetScript("OnClick", function(self) 
-								ColorPickerFrame.previousValues = { unpack(TRB_Config.Runes.Colors[1]) };
-								ColorPickerFrame.func = function() TRB_Runes:SetRuneColor(1, ColorPickerFrame:GetColorRGB()) end;
-								ColorPickerFrame.opacityFunc = function() TRB_Runes:SetRuneColor(1, ColorPickerFrame:GetColorRGB()); end;
-								ColorPickerFrame.cancelFunc = function() TRB_Runes:SetRuneColor(1, unpack(ColorPickerFrame.previousValues)); end;
-								ColorPickerFrame:SetColorRGB( unpack(TRB_Config.Runes.Colors[1]) );
-								ColorPickerFrame:SetFrameStrata("DIALOG");
-								ColorPickerFrame:Show();
-							 end);
-	
-	local tex = panel:CreateTexture(nil, "BACKGROUND");
-	tex:SetWidth(20);
-	tex:SetHeight(20);
-	tex:SetPoint("LEFT", btn, "RIGHT", 10, 0);
-	tex:SetTexture( unpack(TRB_Config.Runes.Colors[1]) );
-	panel.runetypecolor = {};
-	panel.runetypecolor[1] = tex;
-	
-	-- Unholy
-	btn = CreateFrame("button", "mybutton", panel, "UIPanelButtonTemplate");
-	btn.owner = self;
-	btn:SetPoint("TOPLEFT", panel, "TOPLEFT", 20+80+20+10+10, -300);
-	btn:SetWidth(80);
-	btn:SetHeight(22);
-	btn:SetText("Unholy");
-	btn:SetScript("OnClick", function(self) 
-								ColorPickerFrame.previousValues = { unpack(TRB_Config.Runes.Colors[2]) };
-								ColorPickerFrame.func = function() TRB_Runes:SetRuneColor(2, ColorPickerFrame:GetColorRGB()) end;
-								ColorPickerFrame.opacityFunc = function() TRB_Runes:SetRuneColor(2, ColorPickerFrame:GetColorRGB()); end;
-								ColorPickerFrame.cancelFunc = function() TRB_Runes:SetRuneColor(2, unpack(ColorPickerFrame.previousValues)); end;
-								ColorPickerFrame:SetColorRGB( unpack(TRB_Config.Runes.Colors[2]) );
-								ColorPickerFrame:SetFrameStrata("DIALOG");
-								ColorPickerFrame:Show();
-							 end);
-	
-	local tex = panel:CreateTexture(nil, "BACKGROUND");
-	tex:SetWidth(20);
-	tex:SetHeight(20);
-	tex:SetPoint("LEFT", btn, "RIGHT", 10, 0);
-	tex:SetTexture( unpack(TRB_Config.Runes.Colors[2]) );
-	panel.runetypecolor[2] = tex;
-	
-	-- Frost
-	btn = CreateFrame("button", "mybutton", panel, "UIPanelButtonTemplate");
-	btn.owner = self;
-	btn:SetPoint("TOPLEFT", panel, "TOPLEFT", 20, -325);
-	btn:SetWidth(80);
-	btn:SetHeight(22);
-	btn:SetText("Frost");
-	btn:SetScript("OnClick", function(self) 
-								ColorPickerFrame.previousValues = { unpack(TRB_Config.Runes.Colors[3]) };
-								ColorPickerFrame.func = function() TRB_Runes:SetRuneColor(3, ColorPickerFrame:GetColorRGB()) end;
-								ColorPickerFrame.opacityFunc = function() TRB_Runes:SetRuneColor(3, ColorPickerFrame:GetColorRGB()); end;
-								ColorPickerFrame.cancelFunc = function() TRB_Runes:SetRuneColor(3, unpack(ColorPickerFrame.previousValues)); end;
-								ColorPickerFrame:SetColorRGB( unpack(TRB_Config.Runes.Colors[3]) );
-								ColorPickerFrame:SetFrameStrata("DIALOG");
-								ColorPickerFrame:SetFrameLevel(9);
-								ColorPickerFrame:Show();
-							 end);
-	
-	local tex = panel:CreateTexture(nil, "BACKGROUND");
-	tex:SetWidth(20);
-	tex:SetHeight(20);
-	tex:SetPoint("LEFT", btn, "RIGHT", 10, 0);
-	tex:SetTexture( unpack(TRB_Config.Runes.Colors[3]) );
-	panel.runetypecolor[3] = tex;
-	
-	-- Death
-	btn = CreateFrame("button", "mybutton", panel, "UIPanelButtonTemplate");
-	btn.owner = self;
-	btn:SetPoint("TOPLEFT", panel, "TOPLEFT", 20+80+20+10+10, -325);
-	btn:SetWidth(80);
-	btn:SetHeight(22);
-	btn:SetText("Death");
-	btn:SetScript("OnClick", function(self) 
-								ColorPickerFrame.previousValues = { unpack(TRB_Config.Runes.Colors[4]) };
-								ColorPickerFrame.func = function() TRB_Runes:SetRuneColor(4, ColorPickerFrame:GetColorRGB()) end;
-								ColorPickerFrame.opacityFunc = function() TRB_Runes:SetRuneColor(4, ColorPickerFrame:GetColorRGB()); end;
-								ColorPickerFrame.cancelFunc = function() TRB_Runes:SetRuneColor(4, unpack(ColorPickerFrame.previousValues)); end;
-								ColorPickerFrame:SetColorRGB( unpack(TRB_Config.Runes.Colors[4]) );
-								ColorPickerFrame:SetFrameStrata("DIALOG");
-								ColorPickerFrame:SetFrameLevel(9);
-								ColorPickerFrame:Show();
-							 end);
-	
-	local tex = panel:CreateTexture(nil, "BACKGROUND");
-	tex:SetWidth(20);
-	tex:SetHeight(20);
-	tex:SetPoint("LEFT", btn, "RIGHT", 10, 0);
-	tex:SetTexture( unpack(TRB_Config.Runes.Colors[4]) );
-	panel.runetypecolor[4] = tex;
-end
 
-function TRB_Runes:SetRuneColor(runetype, r, g, b)
-
---	self:Print("new color for rune "..(runetype*2-1)..": "..r..", "..g..", "..b);
-	
-	self.panel.runetypecolor[runetype]:SetTexture(r, g, b);
-	
-	TRB_Config.Runes.Colors[runetype] = { r, g, b, 1 };
-	
-	if( runetype < 4 ) then	
-		self:UpdateColor(runetype*2-1, runetype, 1, 0);
-		self:UpdateColor(runetype*2, runetype, 1, 0);
-	end
+	self:CreateColorButtonOption(panel, "Blood", 20, -300);
+	self:CreateColorButtonOption(panel, "Unholy", 140, -300);
+	self:CreateColorButtonOption(panel, "Frost", 20, -325);
+	self:CreateColorButtonOption(panel, "Death", 140, -325);
 end
 
 function TRB_Runes:SetBarTexture(texture)
-	--DEFAULT_CHAT_FRAME:AddMessage("Setting bar texture to "..texture);
 	self.cfg.Texture = texture;
 
 	if( not SM ) then
@@ -931,5 +823,45 @@ function TRB_Runes:SetBarTexture(texture)
 		v:SetStatusBarTexture(SM:Fetch(SM.MediaType.STATUSBAR,texture));
 		v:GetStatusBarTexture():SetHorizTile(false);
 		v:GetStatusBarTexture():SetVertTile(false);
+	end
+end
+
+function TRB_Runes:GetConfigColor(module, name)
+
+	local runeType = 0;
+	if( name == "Blood" ) then
+		runeType = 1;
+	elseif( name == "Unholy" ) then
+		runeType = 2;
+	elseif( name == "Frost" ) then
+		runeType = 3;
+	elseif( name == "Death" ) then
+		runeType = 4;
+	end
+
+	return unpack(TRB_Config[module.name].Colors[runeType]);
+end
+
+function TRB_Runes:SetBarColor(module, name, r, g, b)
+	module.panel.barcolor[name]:SetTexture(r, g, b);
+
+	local runeType = 0;
+	local newColor = {r, g, b, 1};
+
+	if( name == "Blood" ) then
+		runeType = 1;
+	elseif( name == "Unholy" ) then
+		runeType = 2;
+	elseif( name == "Frost" ) then
+		runeType = 3;
+	elseif( name == "Death" ) then
+		runeType = 4;
+	end
+
+	TRB_Config[module.name].Colors[runeType] = newColor;
+
+	if( runeType < 4 ) then	
+		self:UpdateColor(runeType*2-1, runeType, 1, 0);
+		self:UpdateColor(runeType*2, runeType, 1, 0);
 	end
 end

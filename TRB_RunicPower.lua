@@ -201,7 +201,6 @@ function TRB_RunicPower:CreateBorder()
 end
 
 function TRB_RunicPower:SetBarTexture(texture)
-	--DEFAULT_CHAT_FRAME:AddMessage("Setting bar texture to "..texture);
 	self.cfg.Texture = texture;
 
 	if( not SM ) then
@@ -211,4 +210,18 @@ function TRB_RunicPower:SetBarTexture(texture)
 	self.Bar:SetStatusBarTexture(SM:Fetch(SM.MediaType.STATUSBAR,texture));
 	self.Bar:GetStatusBarTexture():SetHorizTile(false);
 	self.Bar:GetStatusBarTexture():SetVertTile(false);
+end
+
+function TRB_RunicPower:OnInitOptions(panel)
+	self:CreateColorButtonOption(panel, "RPower", 420, -110);
+end
+
+function TRB_RunicPower:GetConfigColor(module, name)
+	return unpack(TRB_Config[module.name].Colors);
+end
+
+function TRB_RunicPower:SetBarColor(module, name, r, g, b)
+	module.panel.barcolor[name]:SetTexture(r, g, b);
+
+	TRB_Config[module.name].Colors = { r, g, b, 1 };
 end

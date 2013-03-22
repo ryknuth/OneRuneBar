@@ -31,6 +31,7 @@ TRB_Config_Defaults = {
 	},
 	
 	["Horn of Winter"] = {
+		["Colors"] = { [1] = 0, [2] = 0, [3] = 1,   [4] = 1 },
 		["Position"] = { "CENTER", nil, "CENTER", 0, 0, },
 	},
 	
