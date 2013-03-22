@@ -221,7 +221,6 @@ function TRB_HornOfWinter:CreateBarContainer(w, h)
 end
 
 function TRB_HornOfWinter:SetBarTexture(texture)
-	--DEFAULT_CHAT_FRAME:AddMessage("Setting bar texture to "..texture);
 	self.cfg.Texture = texture;
 
 	if( not SM ) then
@@ -233,4 +232,18 @@ function TRB_HornOfWinter:SetBarTexture(texture)
 		v:GetStatusBarTexture():SetHorizTile(false);
 		v:GetStatusBarTexture():SetVertTile(false);
 	end
+end
+
+function TRB_HornOfWinter:OnInitOptions(panel)
+	self:CreateColorButtonOption(panel, "Horn", 420, -110);
+end
+
+function TRB_HornOfWinter:GetConfigColor(module, name)
+	return unpack(TRB_Config[module.name].Colors);
+end
+
+function TRB_HornOfWinter:SetBarColor(module, name, r, g, b)
+	module.panel.barcolor[name]:SetTexture(r, g, b);
+
+	TRB_Config[module.name].Colors = { r, g, b, 1 };
 end

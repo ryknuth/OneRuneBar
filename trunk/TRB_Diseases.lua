@@ -252,7 +252,6 @@ function TRB_Diseases:CreateBarContainer(w, h)
 end
 
 function TRB_Diseases:SetBarTexture(texture)
-	--DEFAULT_CHAT_FRAME:AddMessage("Setting bar texture to "..texture);
 	self.cfg.Texture = texture;
 
 	if( not SM ) then
@@ -263,5 +262,30 @@ function TRB_Diseases:SetBarTexture(texture)
 		v:SetStatusBarTexture(SM:Fetch(SM.MediaType.STATUSBAR,texture));
 		v:GetStatusBarTexture():SetHorizTile(false);
 		v:GetStatusBarTexture():SetVertTile(false);
+	end
+end
+
+function TRB_Diseases:OnInitOptions(panel)
+	self:CreateColorButtonOption(panel, "FFever", 420, -80);
+	self:CreateColorButtonOption(panel, "BPlague", 420, -110);
+end
+
+function TRB_Diseases:GetConfigColor(module, name)
+	if( name == "FFever" ) then
+		return unpack(TRB_Config[module.name].Colors["ff"]);
+	elseif( name == "BPlague" ) then
+		return unpack(TRB_Config[module.name].Colors["bp"]);
+	end
+	module:Print("TRB BUG: Didn't find color config name: "..name);
+end
+
+function TRB_Diseases:SetBarColor(module, name, r, g, b)
+	module.panel.barcolor[name]:SetTexture(r, g, b);
+
+	local newColor = {r, g, b, 1};
+	if( name == "FFever" ) then
+		TRB_Config[module.name].Colors["ff"] = newColor;
+	elseif( name == "BPlague" ) then
+		TRB_Config[module.name].Colors["bp"] = newColor;
 	end
 end
