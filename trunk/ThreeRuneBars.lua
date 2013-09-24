@@ -55,6 +55,18 @@ function ThreeRuneBars:PLAYER_REGEN_DISABLED()
 	end
 end
 
+function ThreeRuneBars:PET_BATTLE_OPENING_START()
+	for name, m in pairs(self.modules) do
+		m:ChangeVisibility( false );
+	end
+end
+
+function ThreeRuneBars:PET_BATTLE_OVER()
+	for name, m in pairs(self.modules) do
+		m:ChangeVisibility( true );
+	end
+end
+
 --[[
 function ThreeRuneBars:init()
 	self.isLocked = true;
@@ -150,7 +162,9 @@ function ThreeRuneBars:ADDON_LOADED(addon)
 		-- Register OOC Fader events
 		self:RegisterEvent("PLAYER_REGEN_ENABLED");
 		self:RegisterEvent("PLAYER_REGEN_DISABLED");
-		
+		self:RegisterEvent("PET_BATTLE_OPENING_START");
+		self:RegisterEvent("PET_BATTLE_OVER");
+
 		-- Update OOC and FrameStrata state
 		self:PLAYER_REGEN_ENABLED();
 	end
