@@ -141,6 +141,18 @@ function TRB_Module:Disable()
 	self:Print(self.name.." module disabled.");
 end
 
+function TRB_Module:ChangeVisibility(show)
+	if( not self.isRunning ) then return; end
+
+	if( self.frame ) then
+		if( show ) then
+			self.frame:Show();
+		else
+			self.frame:Hide();
+		end
+	end
+end
+
 function TRB_Module:Print(msg)
 	DEFAULT_CHAT_FRAME:AddMessage("TRB: "..msg);
 end
