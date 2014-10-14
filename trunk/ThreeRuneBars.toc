@@ -1,7 +1,7 @@
-## Interface: 50400
+## Interface: 60000
 ## Title: Three Rune Bars
-## Author: McZ 
-## Version: 5.4.0
+## Author: istandalonetoo 
+## Version: 6.0.0
 ## SavedVariables: TRB_Config
 ## Notes: Simple 3 Rune bar display. Combines the 2 runes of the same type into one energy like bar.
 ## OptionalDeps: LibSharedMedia-3.0
