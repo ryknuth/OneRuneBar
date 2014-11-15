@@ -17,6 +17,10 @@ function TRB_Options:init()
 		self:ResetConfig();
 	end
 
+	if not TRB_Config[ "Diseases" ].Colors[ "np" ] then
+		TRB_Config[ "Diseases" ].Colors[ "np" ] = TRB_Config_Defaults[ "Diseases" ].Colors["np"];
+	end
+
 	--
 	-- Create settings panel for ThreeRuneBars under the addon settings in the Blizzard UI
 	--
