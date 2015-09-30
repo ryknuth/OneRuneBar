@@ -168,6 +168,17 @@ end
 
 function TRB_Module:LoadPosition()
 	if( not self.frame ) then return; end -- if no frame exists no position exists.
+--[[	
+-- This should never happen. TRB_Config should exist here.
+	if( not TRB_Config[self.name] ) then TRB_Config[self.name] = TRB_Config_Defaults[self.name]; end
+	
+-- Module should always have a position	
+	if( not TRB_Config[self.name].Position ) then
+		local pos = TRB_Config_Defaults[self.name].Position;
+		TRB_Config[self.name].Position = pos;
+	end
+--]]	
+--	self.frame:SetPoint( unpack(TRB_Config[self.name].Position) );
 
 	if( self.cfg and self.cfg.Position ) then
 		self.frame:SetPoint( unpack(self.cfg.Position) );
@@ -248,57 +259,11 @@ function TRB_Module:InitOptions(parent)
 	_G[slider:GetName().."High"]:SetText("2.0");
 	slider.Text = _G[slider:GetName().."Text"];
 	slider.owner = self;
-	slider:SetScript("OnValueChanged",
-		function(self, value)
-			self.owner.frame:SetScale( value );
-			self.owner.scaleEditBox:SetNumber( value );
-		end
-	);
+	slider:SetScript("OnValueChanged", function(self, value) self.Text:SetText(format("Set Scale: %.1f", value) ); self.owner.frame:SetScale(value); end);
 	slider:SetScript("OnShow", function(self) self:SetValue(TRB_Config[self.owner.name].Scale or TRB_Config_Defaults[self.owner.name].Scale or 1.0); end);
-	slider.Text:SetText( "Scale" );
+	slider.Text:SetText( format("Set Scale: %.1f", slider:GetValue()) );
 	slider:Show();
 	self.ScaleSlider = slider;
-
-	local scaleEditBox = CreateFrame("EditBox", "TRB_ModuleScaleEditBox_"..self.name, panel, 'InputBoxTemplate');
-	scaleEditBox.owner = self;
-	scaleEditBox:SetMaxLetters( 4 );
-	scaleEditBox:Width( 50 );
-	scaleEditBox:Height( 20 );
-	scaleEditBox:SetAutoFocus( false );
-	scaleEditBox:SetPoint( "TOP", slider, "BOTTOM", 0, -8 );
-	scaleEditBox:SetJustifyH( "CENTER" );
-	scaleEditBox:SetJustifyV( "CENTER" );
-	self.scaleEditBox = scaleEditBox;
-
-	scaleEditBox:SetScript( "OnEnterPressed",
-		function()
-			--DEFAULT_CHAT_FRAME:AddMessage( "EnterPressed: "..scaleEditBox:GetNumber() );
-
-			local scale = scaleEditBox:GetNumber();
-			if( scale >= .1 and scale <= 2 ) then
-				scaleEditBox.owner.ScaleSlider:SetValue( scaleEditBox:GetNumber() );
-			else
-				scaleEditBox:SetNumber( scaleEditBox.owner.ScaleSlider:GetValue() );
-			end
-
-			scaleEditBox:ClearFocus();
-		end
-	);
-
-	scaleEditBox:SetScript( "OnShow",
-		function()
-			--DEFAULT_CHAT_FRAME:AddMessage( "OnShow: "..scaleEditBox.owner.ScaleSlider:GetValue() );
-			scaleEditBox:SetNumber( scaleEditBox.owner.ScaleSlider:GetValue() );
-		end
-	);
-
-	scaleEditBox:SetScript( "OnEscapePressed",
-		function()
-			--DEFAULT_CHAT_FRAME:AddMessage( "OnEscapePressed: "..scaleEditBox.owner.ScaleSlider:GetValue() );
-			scaleEditBox:SetNumber( scaleEditBox.owner.ScaleSlider:GetValue() );
-			scaleEditBox:ClearFocus();
-		end
-	);
 
 	-- Texture options
 	local textureText = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight");
@@ -323,7 +288,7 @@ function TRB_Module:InitOptions(parent)
 			local OnClick = 
 				function(self)
 					UIDropDownMenu_SetSelectedID(self.owner, self:GetID());
-					if( self.owner.owner.SetBarTexture and self.cfg ) then self.owner.owner:SetBarTexture(self.value); end
+					if( self.owner.owner.SetBarTexture ) then self.owner.owner:SetBarTexture(self.value); end
 				end;
 
 			local info = UIDropDownMenu_CreateInfo();

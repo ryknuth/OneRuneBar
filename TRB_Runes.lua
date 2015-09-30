@@ -113,30 +113,24 @@ function TRB_Runes:OnEnable()
 		self.Runes[1]:SetPoint("TOPLEFT", self[self.cfg.Order.Blood], "TOPLEFT", 2, -2);	-- Place first bar in the bar frame
 		self.Runes[2] = self:CreateBar("TRB_Rune2", self.frame);
 		self.Runes[2]:SetPoint("TOPLEFT", self.Runes[1], "TOPRIGHT", 2, 0);		-- Link second rune to first so it will follow when bar order is changed.
-		self:UpdateColor(1, 1);
-		self:UpdateColor(2, 1);
 		
 		-- Unholy
 		self.Runes[3] = self:CreateBar("TRB_Rune3", self.frame);
 		self.Runes[3]:SetPoint("TOPLEFT", self[self.cfg.Order.Unholy], "TOPLEFT", 2, -2);	-- Place first bar in the bar frame
 		self.Runes[4] = self:CreateBar("TRB_Rune4", self.frame);
 		self.Runes[4]:SetPoint("TOPLEFT", self.Runes[3], "TOPRIGHT", 2, 0);		-- Link second rune to first so it will follow when bar order is changed.
-		self:UpdateColor(3, 2);
-		self:UpdateColor(4, 2);
 
 		-- Frost
 		self.Runes[5] = self:CreateBar("TRB_Rune5", self.frame);
 		self.Runes[5]:SetPoint("TOPLEFT", self[self.cfg.Order.Frost], "TOPLEFT", 2, -2);	-- Place first bar in the bar frame
 		self.Runes[6] = self:CreateBar("TRB_Rune6", self.frame);
 		self.Runes[6]:SetPoint("TOPLEFT", self.Runes[5], "TOPRIGHT", 2, 0);		-- Link second rune to first so it will follow when bar order is changed.
-		self:UpdateColor(5, 3);
-		self:UpdateColor(6, 3);
 	end
 
 	if(self.cfg.Texture) then
 		self:SetBarTexture(self.cfg.Texture);
 	end
-
+		
 	--
 	--  EVENTS
 	--	
@@ -146,8 +140,36 @@ function TRB_Runes:OnEnable()
 
 	self.last = 0;
 	self.frame:SetScript("OnEvent", function(frame, event, ...) frame.owner[event](frame.owner, ...); end );
-	self.frame:SetScript("OnUpdate", function(frame, elapsed) frame.owner:OnUpdate(elapsed); end );
+	
+	-- New first login OnUpdate timer, to set rune colors.
+	self.frame:SetScript("OnUpdate", function(frame, elapsed) frame.owner:OnUpdateFirst(elapsed); end );
 end
+
+-- OnUpdateFirst
+function TRB_Runes:OnUpdateFirst(elapsed)
+	self.last = self.last + elapsed;
+
+	if( self.last > 1 ) then
+		self.last = 0;
+		
+		RuneTypeOK = GetRuneType(1);
+		
+		if( RuneTypeOK ) then
+			-- Now we can get correct rune type and update color. Did not work to check rune type in OnEnable() function
+			self:UpdateColor(1);
+			self:UpdateColor(2);
+			self:UpdateColor(3);
+			self:UpdateColor(4);
+			self:UpdateColor(5);
+			self:UpdateColor(6);
+			
+			-- Now use the Default OnUpdate function
+			self.last = 0;
+			self.frame:SetScript("OnUpdate", function(frame, elapsed) frame.owner:OnUpdate(elapsed); end );
+		end
+	end
+end
+
 
 --
 -- UpdateColor(rune, type, cur_value, duration)
@@ -155,6 +177,7 @@ end
 --
 function TRB_Runes:UpdateColor(r, t, v, d)
 	if( t == nil) then t=GetRuneType(r); end
+	if( t == nil) then return; end  -- if type is till nil, don't continue
 
 	local a = 1;
 	if( (v or 1) < (d or 0) ) then
@@ -287,7 +310,6 @@ function TRB_Runes:OnUpdate(elapsed)
 		self:Flash_Update(self.last);
 		self.last = 0;
 	end
-	
 end
 
 function TRB_Runes:Flash_SetColor(rune, v1, v2)

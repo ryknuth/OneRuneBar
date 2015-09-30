@@ -21,7 +21,7 @@ TRB_Config_Defaults = {
 		["Colors"] = { 
 			["ff"] = { 0, 0.5, 1,  1, },		-- Frost Fever
 			["bp"] = { 0, 0.7, 0,  1, },		-- Blood Plague
-			["np"] = { 0.35, 0.17, 0.30,  1, },		-- Necrotic Plague
+			["np"] = { 0.35, 0.17, 0.30,  1, }, -- Necrotic Plague
 		},
 		["Position"] = { "CENTER", nil, "CENTER", 160, -13, },
 	},
