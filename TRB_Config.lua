@@ -6,15 +6,15 @@ end
 TRB_Config_Defaults = {
 
 	["Runes"] = {
-		["Colors"] = {
-			[1] = { [1] = 1,   [2] = 0,   [3] = 0,   [4] = 1 },		-- RuneType: Blood
-			[2] = { [1] = 0,   [2] = 0.7, [3] = 0,   [4] = 1 },		-- RuneType: Unholy
-			[3] = { [1] = 0,   [2] = 0.3, [3] = 1,   [4] = 1 },		-- RuneType: Frost
-			[4] = { [1] = 0.8, [2] = 0.7,   [3] = 0.9, [4] = 1 },	-- RuneType: Death
-		},
+--		["Colors"] = { --> Useless in Legion
+--			[1] = { [1] = 1,   [2] = 0,   [3] = 0,   [4] = 1 },		-- RuneType: Blood
+--			[2] = { [1] = 0,   [2] = 0.7, [3] = 0,   [4] = 1 },		-- RuneType: Unholy
+--			[3] = { [1] = 0,   [2] = 0.3, [3] = 1,   [4] = 1 },		-- RuneType: Frost
+--			[4] = { [1] = 0.8, [2] = 0.7,   [3] = 0.9, [4] = 1 },	-- RuneType: Death
+--		},
 		["Position"] = { "CENTER", nil, "CENTER", 0, -135, },
-		["Order"] = { ["Blood"] = "Bar1", ["Unholy"] = "Bar2", ["Frost"] = "Bar3" },
---		["WRBGA"] = 0.2; -- Waiting Rune Background Alpha (REMOVED in 1.0.10?)
+--		["Order"] = { ["Blood"] = "Bar1", ["Unholy"] = "Bar2", ["Frost"] = "Bar3" }, --> Useless in Legion
+		["Color"] = { [1] = 0.8, [2] = 0.7,   [3] = 0.9, [4] = 1 },
 	},
 	
 	["Diseases"] = {
