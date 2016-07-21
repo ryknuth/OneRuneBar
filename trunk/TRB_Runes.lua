@@ -5,10 +5,13 @@ end
 ------------------------------------------------------------------------
 local BG_Tex = "Interface\\AddOns\\ThreeRuneBars\\borders.tga";
 
-local BarSize = {
-	["Width"] = 96,
-	["Height"] = 8,
-};
+local RuneWidth = 46
+local RuneHeight = 6
+local BorderSize = 2
+local FullBarWidth = 48 * 6
+local FullBarHeight = 6
+local FrameWidth = FullBarWidth + BorderSize
+local FrameHeight = FullBarHeight + BorderSize * 2
 
 ------------------------------------------------------------------------
 
@@ -22,187 +25,128 @@ function TRB_Runes:OnDisable()
 	self.frame:SetScript("OnEvent", nil);
 end
 
-function TRB_Runes:OnLoadPosition()
-	TRB_Runes:UpdateBarPositions();
-end
-
 function TRB_Runes:UpdateBarPositions()
-
-	if( not self.cfg.Order ) then
-		-- Notify user that we have no rune order in config.
-		self:Error("[TRB_Runes:UpdateBarPositions()] Failed to update bar position. Rune order not set, using default rune order.");
-		
-		-- Set default rune order
-		self.cfg.Blood	= TRB_Config_Defaults.Runes.Order.Blood;
-		self.cfg.Unholy	= TRB_Config_Defaults.Runes.Order.Unholy;
-		self.cfg.Frost	= TRB_Config_Defaults.Runes.Order.Frost;
-	end
-	
-	-- Only need to change first rune in each group because the other will follow.
-	self.Runes[1]:SetPoint("TOPLEFT", self[self.cfg.Order.Blood], "TOPLEFT", 2, -2);	-- Blood
-	self.Runes[3]:SetPoint("TOPLEFT", self[self.cfg.Order.Unholy], "TOPLEFT", 2, -2);	-- Unholy
-	self.Runes[5]:SetPoint("TOPLEFT", self[self.cfg.Order.Frost], "TOPLEFT", 2, -2);	-- Frost
-
 	-- Now is a good time to update sizes
-	self:UpdateSizes();
-end
-
-function TRB_Runes:UpdateSizes()
 	for i=1, 6 do
 		local b = self.Runes[i];
-		b:SetWidth( BarSize.Width/2 );
-		b:SetHeight( BarSize.Height );
+		b:SetWidth( RuneWidth );
+		b:SetHeight( RuneHeight );
 	end
 end
 
 function TRB_Runes:OnEnable()
-
 	--DEFAULT_CHAT_FRAME:AddMessage("UT: module Runes Loaded");
-	
+
 	if( not self.frame ) then
-		local f = CreateFrame("frame", nil, UIParent);
-		
+		local frame = CreateFrame("frame", nil, UIParent);
+
 		-- Set position
-		f:SetWidth(48*6+22);
-		f:SetHeight(8+4);
-		--f:SetPoint("CENTER", UIParent, "CENTER", 0, 0 );
-		f:SetFrameStrata("HIGH");
-		f.owner = self;
-		self.frame = f;
-		f:Show();
-		
-		-- Create Border around our runebars 
-		self.Bar1 = self:CreateBarContainer(BarSize.Width, BarSize.Height);
-		self.Bar1:SetPoint("LEFT", self.frame, "LEFT", 0, 0 );
-		self.Bar2 = self:CreateBarContainer(BarSize.Width, BarSize.Height);
-		self.Bar2:SetPoint("LEFT", self.Bar1, "RIGHT", 2, 0 );
-		self.Bar3 = self:CreateBarContainer(BarSize.Width, BarSize.Height);
-		self.Bar3:SetPoint("LEFT", self.Bar2, "RIGHT", 2, 0 );
-		
+		frame:SetWidth(FrameWidth);
+		frame:SetHeight(FrameHeight);
+		frame:SetFrameStrata("HIGH");
+		frame.owner = self;
+		self.frame = frame;
+		frame:Show();
+
+		-- Create Border around our runebar
+		self.Bar = self:CreateBarContainer(FullBarWidth, FullBarHeight);
+		self.Bar:SetPoint("LEFT", self.frame, "LEFT", 0, 0 );
+
 		-- Set border colors black
-		self:SetBorderColor(1, 0, 0, 0, 1);
-		self:SetBorderColor(2, 0, 0, 0, 1);
-		self:SetBorderColor(3, 0, 0, 0, 1);
-		self:SetBorderColor(4, 0, 0, 0, 1);
-		self:SetBorderColor(5, 0, 0, 0, 1);
-		self:SetBorderColor(6, 0, 0, 0, 1);
-		
+		self:SetBorderColor(0, 0, 0, 1);
+
 		-- Create a moveframe so user can unlock and move the rune bars
 		self:CreateMoveFrame();
 	end
 	
 	if( not self.Runes ) then
-	
 		-- Create the runebars
-		
 		self.Runes = {};
-		self.needUpdate = { [1] = false, [2] = false, [3] = false, [4] = false, [5] = false, [6] = false };
-		
-		if( not self.cfg.Order ) then
-			-- Notify user that we have no rune order in config.
-			self:Error("[TRB_Runes:OnEnable()] Failed to update bar position. Rune order not set, using default rune order.");
-			
-			-- Set default rune order
-			self.cfg.Blood	= TRB_Config_Defaults.Runes.Order.Blood;
-			self.cfg.Unholy	= TRB_Config_Defaults.Runes.Order.Unholy;
-			self.cfg.Frost	= TRB_Config_Defaults.Runes.Order.Frost;
-		end
 
 		-- Blood
 		self.Runes[1] = self:CreateBar("TRB_Rune1", self.frame);
-		self.Runes[1]:SetPoint("TOPLEFT", self[self.cfg.Order.Blood], "TOPLEFT", 2, -2);	-- Place first bar in the bar frame
-		self.Runes[2] = self:CreateBar("TRB_Rune2", self.frame);
-		self.Runes[2]:SetPoint("TOPLEFT", self.Runes[1], "TOPRIGHT", 2, 0);		-- Link second rune to first so it will follow when bar order is changed.
+		self.Runes[1]:SetPoint("TOPLEFT", self.frame, "TOPLEFT", BorderSize, -(BorderSize));	-- Place first bar in the bar frame
+
+		self.Runes[2] = self:CreateBar("TRB_RuneBorderSize", self.frame);
+		self.Runes[2]:SetPoint("TOPLEFT", self.Runes[1], "TOPRIGHT", BorderSize, 0);		-- Link second rune to first so it will follow when bar order is changed.
 		
 		-- Unholy
 		self.Runes[3] = self:CreateBar("TRB_Rune3", self.frame);
-		self.Runes[3]:SetPoint("TOPLEFT", self[self.cfg.Order.Unholy], "TOPLEFT", 2, -2);	-- Place first bar in the bar frame
+		self.Runes[3]:SetPoint("TOPLEFT", self.Runes[BorderSize], "TOPRIGHT", BorderSize, 0);	-- Place first bar in the bar frame
 		self.Runes[4] = self:CreateBar("TRB_Rune4", self.frame);
-		self.Runes[4]:SetPoint("TOPLEFT", self.Runes[3], "TOPRIGHT", 2, 0);		-- Link second rune to first so it will follow when bar order is changed.
+		self.Runes[4]:SetPoint("TOPLEFT", self.Runes[3], "TOPRIGHT", BorderSize, 0);		-- Link second rune to first so it will follow when bar order is changed.
 
 		-- Frost
 		self.Runes[5] = self:CreateBar("TRB_Rune5", self.frame);
-		self.Runes[5]:SetPoint("TOPLEFT", self[self.cfg.Order.Frost], "TOPLEFT", 2, -2);	-- Place first bar in the bar frame
+		self.Runes[5]:SetPoint("TOPLEFT", self.Runes[4], "TOPRIGHT", BorderSize, 0);	-- Place first bar in the bar frame
 		self.Runes[6] = self:CreateBar("TRB_Rune6", self.frame);
-		self.Runes[6]:SetPoint("TOPLEFT", self.Runes[5], "TOPRIGHT", 2, 0);		-- Link second rune to first so it will follow when bar order is changed.
+		self.Runes[6]:SetPoint("TOPLEFT", self.Runes[5], "TOPRIGHT", BorderSize, 0);		-- Link second rune to first so it will follow when bar order is changed.
+
+		self:UpdateBarPositions()
+		self:UpdateColor()
 	end
 
 	if(self.cfg.Texture) then
 		self:SetBarTexture(self.cfg.Texture);
 	end
-		
+
+	if(not self.RuneInfoTable) then
+		self.RuneInfoTable = {}
+		self.SortedRuneInfos = {}
+	end
+
+	for runeIndex=1, 6 do
+		if( not self.RuneInfoTable[runeIndex] ) then
+			self.RuneInfoTable[runeIndex] = { runeIndex, 0, 0, false };
+			self.SortedRuneInfos[runeIndex] = self.RuneInfoTable[runeIndex];
+		end;
+	end
+
 	--
 	--  EVENTS
-	--	
+	--
 	-- Runes
 	self.frame:RegisterEvent("RUNE_POWER_UPDATE");
-	self.frame:RegisterEvent("RUNE_TYPE_UPDATE");
 
 	self.last = 0;
 	self.frame:SetScript("OnEvent", function(frame, event, ...) frame.owner[event](frame.owner, ...); end );
-	
+
 	-- New first login OnUpdate timer, to set rune colors.
-	self.frame:SetScript("OnUpdate", function(frame, elapsed) frame.owner:OnUpdateFirst(elapsed); end );
+	self.frame:SetScript("OnUpdate", function(frame, elapsed) frame.owner:OnUpdate(elapsed); end );
 end
-
--- OnUpdateFirst
-function TRB_Runes:OnUpdateFirst(elapsed)
-	self.last = self.last + elapsed;
-
-	if( self.last > 1 ) then
-		self.last = 0;
-		
-		RuneTypeOK = GetRuneType(1);
-		
-		if( RuneTypeOK ) then
-			-- Now we can get correct rune type and update color. Did not work to check rune type in OnEnable() function
-			self:UpdateColor(1);
-			self:UpdateColor(2);
-			self:UpdateColor(3);
-			self:UpdateColor(4);
-			self:UpdateColor(5);
-			self:UpdateColor(6);
-			
-			-- Now use the Default OnUpdate function
-			self.last = 0;
-			self.frame:SetScript("OnUpdate", function(frame, elapsed) frame.owner:OnUpdate(elapsed); end );
-		end
-	end
-end
-
 
 --
--- UpdateColor(rune, type, cur_value, duration)
+-- UpdateColor(rune, currentValue, duration)
 -- Update the runebar color
 --
-function TRB_Runes:UpdateColor(r, t, v, d)
-	if( t == nil) then t=GetRuneType(r); end
-	if( t == nil) then return; end  -- if type is till nil, don't continue
-
+function TRB_Runes:UpdateColor(currentValue, duration)
 	local a = 1;
-	if( (v or 1) < (d or 0) ) then
+	if( (currentValue or 1) < (duration or 0) ) then
 		a = 0.8;
 	end
-	-- Update Runebar color
-	self.Runes[r]:SetStatusBarColor(self.cfg["Colors"][t][1], self.cfg["Colors"][t][2], self.cfg["Colors"][t][3], a);
 
-	-- Change border color for the runebar to match the runetype of the waiting rune.
-	local bg = self.Runes[r].bg;
-	if( ((v or 1) <= 0) and ((r==2) or (r==4) or (r==6)) ) then
-		self:SetWaitingRuneColor(r, self.cfg.Colors[t][1], self.cfg.Colors[t][2], self.cfg.Colors[t][3]);
-	else
-		self:SetWaitingRuneColor(r, 0, 0, 0);
+	if( not self.cfg.Color ) then
+		self.cfg.Color = {}
+		self.cfg.Color[1] = TRB_Config_Defaults.Runes.Color[1];
+		self.cfg.Color[2] = TRB_Config_Defaults.Runes.Color[2];
+		self.cfg.Color[3] = TRB_Config_Defaults.Runes.Color[3];
+	end;
+
+	-- Update Runebar color
+	for runeIndex=1, 6 do
+		self.Runes[runeIndex]:SetStatusBarColor(self.cfg.Color[1], self.cfg.Color[2], self.cfg.Color[3], a);
+		--self:SetWaitingRuneColor(runeIndex, 0, 0, 0);
 	end
 end
 
 --
--- UpdateText (Called from Updatebar)
+-- UpdateText
 -- Update cooldown text on runebars
 --
-function TRB_Runes:UpdateText( rune, value, duration )
+function TRB_Runes:UpdateText( runeIndex, value, duration )
 
 	if( self.cfg.noText ) then
-		self.Runes[rune].text:SetText("");
+		self.Runes[runeIndex].text:SetText("");
 		return;
 	end
 
@@ -210,84 +154,80 @@ function TRB_Runes:UpdateText( rune, value, duration )
 
 	if( value > 0 and value < duration) then
 		if( value < 2 ) then
-			self.Runes[rune].text:SetText( format("%.1f", value) );
+			self.Runes[runeIndex].text:SetText( format("%.1f", value) );
 		else
-			self.Runes[rune].text:SetText( format("%.0f", value) );
+			self.Runes[runeIndex].text:SetText( format("%.0f", value) );
 		end
 	else
-		self.Runes[rune].text:SetText("");
+		self.Runes[runeIndex].text:SetText("");
 	end
 end
 
---
--- Updatebar
--- Update the bar for runes rune1 and rune2.
---
-function TRB_Runes:Updatebar( rune1, rune2 )
-	local s1, d1, r1 = GetRuneCooldown(rune1);
-	local s2, d2, r2 = GetRuneCooldown(rune2);
-	local rt1 = GetRuneType(rune1);
-	local rt2 = GetRuneType(rune2);
-	
---	local val1 = ((r1 and d1) or (GetTime() - s1)); -- <- Working?
-	
-	local val1 = GetTime() - s1;	-- Calculate cooldown
-	local val2 = GetTime() - s2;
-	if( r1 or val1 > d1) then
-		val1 = d1;	-- rune1 is ready
+function TRB_Runes:UpdateRuneInfoTable()
+	for runeIndex=1, 6 do
+		if( not self.RuneInfoTable[runeIndex][4] ) then
+			local start, duration, ready = GetRuneCooldown( runeIndex );
+			local value = GetTime() - start;
+
+			if( value < 0 ) then value = 0 end;
+
+			self.RuneInfoTable[runeIndex][2] = value;
+			self.RuneInfoTable[runeIndex][3] = duration;
+			self.RuneInfoTable[runeIndex][4] = ready;
+		end
 	end
-	if( r2 or val2 > d2) then
-		val2 = d2;	-- rune2 is ready
+end
+
+function sort(t)
+	local itemCount = #t;
+
+	local hasChanged = true;
+
+	while( hasChanged ) do
+		hasChanged = false;
+
+		itemCount = itemCount - 1;
+
+		for index=1,itemCount do
+			if( t[index][2] < t[index + 1][2] ) then
+				local temp = t[index];
+				t[index] = t[index + 1];
+				t[index + 1] = temp;
+				hasChanged = true;
+			end
+		end
 	end
-	if( val1 < 0 ) then val1 = 0; end
-	if( val2 < 0 ) then val2 = 0; end
-	
-	-- Save the bar values so we can check if any of the runes has finished the cooldown.
-	local o1, o2 = self.Runes[rune1]:GetValue(), self.Runes[rune2]:GetValue();
-	
-	-- Update bar values for the runes of this bar. Swap place if needed to get the Energy like behaviour.
-	if( val1 < val2 ) then
-		self.Runes[rune1]:SetValue((val2 / d2) * 100);
-		self.Runes[rune2]:SetValue((val1 / d1) * 100);
-		
-		-- Update Cooldown text
-		self:UpdateText(rune1, d2-val2, d2);
-		self:UpdateText(rune2, d1-val1, d1);
-		
-		-- Update Color
-		self:UpdateColor(rune1, rt2, val2, d2);
-		self:UpdateColor(rune2, rt1, val1, d1);
-	else
-		self.Runes[rune1]:SetValue((val1 / d1) * 100);
-		self.Runes[rune2]:SetValue((val2 / d2) * 100);
-		
-		-- Update Cooldown text
-		self:UpdateText(rune1, d1-val1, d1);
-		self:UpdateText(rune2, d2-val2, d2);
-		
-		-- Update Color
-		self:UpdateColor(rune1, rt1, val1, d1);
-		self:UpdateColor(rune2, rt2, val2, d2);
+end
+
+function TRB_Runes:SortRuneInfos()
+	for runeIndex=1, 6 do
+		self.SortedRuneInfos[runeIndex] = self.RuneInfoTable[runeIndex];
 	end
-	
-	-- Get the new bar values
-	local n1, n2 = self.Runes[rune1]:GetValue(), self.Runes[rune2]:GetValue();
-	
-	-- Determin if we need to flash a ready rune.
-	if( n1 > o1 and n1 >= 100 ) then self:Flash_Start(rune1); end
-	if( n2 > o2 and n2 >= 100 ) then self:Flash_Start(rune2); end
-	
+
+	sort(self.SortedRuneInfos);
+end
+
+function TRB_Runes:UpdateFullBar()
+	self:UpdateRuneInfoTable();
+	self:SortRuneInfos();
+
+	for runeIndex=1, 6 do
+		local oldValue = self.Runes[runeIndex]:GetValue();
+
+		local value = self.SortedRuneInfos[runeIndex][2];
+		local duration = self.SortedRuneInfos[runeIndex][3];
+		self.Runes[runeIndex]:SetValue( value / duration * 100 );
+		self:UpdateText(runeIndex, duration - value, duration);
+
+		--if( oldValue and value and value > oldValue and value >= 100 ) then self:Flash_Start(runeIndex); end
+	end
 end
 
 -- Runes EVENTS
-function TRB_Runes:RUNE_POWER_UPDATE(rune, useable)
+function TRB_Runes:RUNE_POWER_UPDATE(runeIndex, useable)
 	if( not useable ) then
-		self.needUpdate[rune] = true;
+		self.RuneInfoTable[runeIndex][4] = false;
 	end
-end
-
-function TRB_Runes:RUNE_TYPE_UPDATE(rune)
-	self:UpdateColor(rune);
 end
 
 -- OnUpdate
@@ -295,63 +235,42 @@ function TRB_Runes:OnUpdate(elapsed)
 	self.last = self.last + elapsed;
 
 	if( self.last > 0.01 ) then
-		if( self.needUpdate[1] or self.needUpdate[2] ) then
-			self:Updatebar( 1, 2); -- Blood
-		end
-		
-		if( self.needUpdate[3] or self.needUpdate[4] ) then
-			self:Updatebar( 3, 4); -- Unholy
-		end
-		
-		if( self.needUpdate[5] or self.needUpdate[6] ) then
-			self:Updatebar( 5, 6); -- Frost
-		end
-		
-		self:Flash_Update(self.last);
+		self:UpdateFullBar();
+
+		--self:Flash_Update(self.last);
 		self.last = 0;
 	end
 end
 
-function TRB_Runes:Flash_SetColor(rune, v1, v2)
-	local bar = nil;
-	
-	if( rune == 1 or rune == 2) then
-		bar = self[self.cfg.Order["Blood"]];
-	elseif( rune == 3 or rune == 4) then
-		bar = self[self.cfg.Order["Unholy"]];
-	elseif( rune == 5 or rune == 6) then
-		bar = self[self.cfg.Order["Frost"]];
-	end
-	
+function TRB_Runes:Flash_SetColor(runeIndex, v1, v2)
+	local bar = self.Bar;
+
 	if( not bar ) then return; end
 	
-	if( rune == 1 or rune == 3 or rune == 5 ) then
-		-- Flash left side
-		bar.tl:SetVertexColor(v1, v1, v1);
-		bar.l:SetVertexColor(v1, v1, v1);
-		bar.bl:SetVertexColor(v1, v1, v1);
-		
-		bar.t1:SetGradient("HORIZONTAL", v1, v1, v1, v2, v2, v2);
-		bar.b1:SetGradient("HORIZONTAL", v1, v1, v1, v2, v2, v2);
-		
-		bar.tm:SetGradient("HORIZONTAL", v2, v2, v2, 0, 0, 0);
-		bar.m:SetGradient("HORIZONTAL", v2, v2, v2, 0, 0, 0);
-		bar.bm:SetGradient("HORIZONTAL", v2, v2, v2, 0, 0, 0);
-	else
-		-- Flash right side
-	
-		bar.tr:SetVertexColor(v2, v2, v2);
-		bar.r:SetVertexColor(v2, v2, v2);
-		bar.br:SetVertexColor(v2, v2, v2);
-		
-		bar.t2:SetGradient("HORIZONTAL", v1, v1, v1, v2, v2, v2);
-		bar.b2:SetGradient("HORIZONTAL", v1, v1, v1, v2, v2, v2);
-		
-		bar.tm:SetGradient("HORIZONTAL", 0, 0, 0, v1, v1, v1);
-		bar.m:SetGradient("HORIZONTAL", 0, 0, 0, v1, v1, v1);
-		bar.bm:SetGradient("HORIZONTAL", 0, 0, 0, v1, v1, v1);
-	end
-	
+--	if( runeIndex == 1 or runeIndex == 3 or runeIndex == 5 ) then
+--		-- Flash left side
+--		bar.tl:SetVertexColor(v1, v1, v1);
+--		bar.l:SetVertexColor(v1, v1, v1);
+--		bar.bl:SetVertexColor(v1, v1, v1);
+--
+--		bar.t:SetGradient("HORIZONTAL", v1, v1, v1, v2, v2, v2);
+--		bar.b:SetGradient("HORIZONTAL", v1, v1, v1, v2, v2, v2);
+--
+--		bar.m1:SetGradient("HORIZONTAL", v2, v2, v2, 0, 0, 0);
+--	else
+--		-- Flash right side
+--	
+--		bar.tr:SetVertexColor(v2, v2, v2);
+--		bar.r:SetVertexColor(v2, v2, v2);
+--		bar.br:SetVertexColor(v2, v2, v2);
+--		
+--		bar.t2:SetGradient("HORIZONTAL", v1, v1, v1, v2, v2, v2);
+--		bar.b2:SetGradient("HORIZONTAL", v1, v1, v1, v2, v2, v2);
+--		
+--		bar.tm:SetGradient("HORIZONTAL", 0, 0, 0, v1, v1, v1);
+--		bar.m:SetGradient("HORIZONTAL", 0, 0, 0, v1, v1, v1);
+--		bar.bm:SetGradient("HORIZONTAL", 0, 0, 0, v1, v1, v1);
+--	end
 end
 
 function TRB_Runes:Flash_Update(elapsed)
@@ -383,29 +302,19 @@ end
 -- SetWaitingRuneColor
 -- This will set the color of the border to the waiting rune color type
 --
-function TRB_Runes:SetWaitingRuneColor(rune, r, g, b)
-	local bar = nil;
-	
-	if( rune == 2) then
-		bar = self[self.cfg.Order["Blood"]]; -- Get the bar for Blood runes
-	elseif( rune == 4) then
-		bar = self[self.cfg.Order["Unholy"]]; -- Get the bar for Unholy runes
-	elseif( rune == 6) then
-		bar = self[self.cfg.Order["Frost"]]; -- Get the bar for Frost runes
-	end
-	
+function TRB_Runes:SetWaitingRuneColor(runeIndex, r, g, b)
+	local bar = self.Bar;
+
 	-- This function is only intended to use on Rune 2,4,6 if called with other rune number bar is nil, then we end this.
 	if( not bar ) then return; end
-	
+
 	local v=0.3;
-	
-	bar.tm:SetGradient("HORIZONTAL", 0, 0, 0, r*v, g*v, b*v);
-	bar.m:SetGradient("HORIZONTAL", 0, 0, 0, r*v, g*v, b*v);
-	bar.bm:SetGradient("HORIZONTAL", 0, 0, 0, r*v, g*v, b*v);
-	
-	bar.t2:SetGradient("HORIZONTAL", r*v, g*v, b*v, r, g, b);
-	bar.b2:SetGradient("HORIZONTAL", r*v, g*v, b*v, r, g, b);
-	
+
+	--bar.m1:SetGradient("HORIZONTAL", 0, 0, 0, r*v, g*v, b*v);
+
+	bar.t:SetGradient("HORIZONTAL", r*v, g*v, b*v, r, g, b);
+	bar.b:SetGradient("HORIZONTAL", r*v, g*v, b*v, r, g, b);
+
 	bar.tr:SetVertexColor(r,g,b);
 	bar.r:SetVertexColor(r,g,b);
 	bar.br:SetVertexColor(r,g,b);
@@ -415,65 +324,18 @@ end
 -- SetBorderColor
 -- This will set the color of the border for a specefic rune. (At the moment only used for setting the border black on init)
 --
-function TRB_Runes:SetBorderColor(rune, r, g, b, a)
+function TRB_Runes:SetBorderColor(r, g, b, a)
+	local bar = self.Bar;
+	bar.tl:SetVertexColor(r,g,b,a);
+	bar.tr:SetVertexColor(r,g,b,a);
+	bar.bl:SetVertexColor(r,g,b,a);
+	bar.br:SetVertexColor(r,g,b,a);
+	bar.l:SetVertexColor(r,g,b,a);
+	bar.r:SetVertexColor(r,g,b,a);
+	bar.t:SetVertexColor(r,g,b,a);
+	bar.b:SetVertexColor(r,g,b,a);
 
-	if( rune == 1 ) then
-		local bar = self.Bar1;
-		bar.tl:SetVertexColor(r,g,b,a);
-		bar.bl:SetVertexColor(r,g,b,a);
-		bar.l:SetVertexColor(r,g,b,a);
-		bar.t1:SetVertexColor(r,g,b,a);
-		bar.b1:SetVertexColor(r,g,b,a);
-		
-		bar.tm:SetVertexColor(r,g,b,a);
-		bar.m:SetVertexColor(r,g,b,a);
-		bar.bm:SetVertexColor(r,g,b,a);
-	elseif( rune == 2 ) then
-		local bar = self.Bar1;
-		bar.tr:SetVertexColor(r,g,b,a);
-		bar.r:SetVertexColor(r,g,b,a);
-		bar.br:SetVertexColor(r,g,b,a);
-		bar.t2:SetVertexColor(r,g,b,a);
-		bar.b2:SetVertexColor(r,g,b,a);
-		
-	elseif( rune == 3 ) then
-		local bar = self.Bar2;
-		bar.tl:SetVertexColor(r,g,b,a);
-		bar.bl:SetVertexColor(r,g,b,a);
-		bar.l:SetVertexColor(r,g,b,a);
-		bar.t1:SetVertexColor(r,g,b,a);
-		bar.b1:SetVertexColor(r,g,b,a);
-		
-		bar.tm:SetVertexColor(r,g,b,a);
-		bar.m:SetVertexColor(r,g,b,a);
-		bar.bm:SetVertexColor(r,g,b,a);
-	elseif( rune == 4 ) then
-		local bar = self.Bar2;
-		bar.tr:SetVertexColor(r,g,b,a);
-		bar.r:SetVertexColor(r,g,b,a);
-		bar.br:SetVertexColor(r,g,b,a);
-		bar.t2:SetVertexColor(r,g,b,a);
-		bar.b2:SetVertexColor(r,g,b,a);
-	elseif( rune == 5 ) then
-		local bar = self.Bar3;
-		bar.tl:SetVertexColor(r,g,b,a);
-		bar.bl:SetVertexColor(r,g,b,a);
-		bar.l:SetVertexColor(r,g,b,a);
-		bar.t1:SetVertexColor(r,g,b,a);
-		bar.b1:SetVertexColor(r,g,b,a);
-		
-		bar.tm:SetVertexColor(r,g,b,a);
-		bar.m:SetVertexColor(r,g,b,a);
-		bar.bm:SetVertexColor(r,g,b,a);
-	elseif( rune == 6 ) then
-		local bar = self.Bar3;
-		bar.tr:SetVertexColor(r,g,b,a);
-		bar.r:SetVertexColor(r,g,b,a);
-		bar.br:SetVertexColor(r,g,b,a);
-		bar.t2:SetVertexColor(r,g,b,a);
-		bar.b2:SetVertexColor(r,g,b,a);
-	end
-
+	--bar.m1:SetVertexColor(r,g,b,a);
 end
 
 --
@@ -487,13 +349,12 @@ end
 function TRB_Runes:CreateBarContainer(w, h)
 	local f = CreateFrame("frame", nil, self.frame)
 	-- Set position
-	f:SetWidth(w+2+2+2);
-	f:SetHeight(h+2+2);
---	f:SetFrameStrata("HIGH");
+	f:SetWidth(FrameWidth);
+	f:SetHeight(FrameHeight);
 	f:Show();
-	
+
 	-- Corners
-	
+
 	-- TL
 	local t = self:CreateTexture(f, 6, 6);
 	t:SetPoint("CENTER", f, "TOPLEFT", 0, 0);
@@ -521,24 +382,23 @@ function TRB_Runes:CreateBarContainer(w, h)
 	t:SetTexture(BG_Tex);
 	t:SetTexCoord(21/32, 21/32+6/32, 14/32, 14/32+6/32);
 	f.br = t;
-	
-	
-	-- TM
+
+	-- Top
 	t = self:CreateTexture(f, 6, 6);
-	t:SetPoint("CENTER", f, "TOP", 0, 0);
+	t:SetPoint("LEFT", f.tl, "RIGHT", 0, 0);
+	t:SetPoint("RIGHT", f.tr, "LEFT", 0, 0);
 	t:SetTexture(BG_Tex);
-	t:SetTexCoord(14/32, 14/32+6/32, 0, 6/32);
-	f.tm = t;
-	
-	-- BM
+	t:SetTexCoord(8/32, 6/32+6/32, 0, 6/32);
+	f.t = t;
+
+	-- Bottom
 	t = self:CreateTexture(f, 6, 6);
-	t:SetPoint("CENTER", f, "BOTTOM", 0, 0);
+	t:SetPoint("LEFT", f.bl, "RIGHT", 0, 0);
+	t:SetPoint("RIGHT", f.br, "LEFT", 0, 0);
 	t:SetTexture(BG_Tex);
-	t:SetTexCoord(14/32, 14/32+6/32, 14/32, 14/32+6/32);
-	f.bm = t;
-	
-	-- Sizeable parts
-	
+	t:SetTexCoord(8/32, 6/32+6/32, 14/32, 14/32+6/32);
+	f.b = t;
+
 	-- L
 	t = self:CreateTexture(f, 6, 6);
 	t:SetPoint("TOP", f.tl, "BOTTOM", 0, 0);
@@ -546,15 +406,7 @@ function TRB_Runes:CreateBarContainer(w, h)
 	t:SetTexture(BG_Tex);
 	t:SetTexCoord(0, 6/32, 8/32, 6/32+6/32);
 	f.l = t;
-	
-	-- M	
-	t = self:CreateTexture(f, 6, 6);
-	t:SetPoint("TOP", f.tm, "BOTTOM", 0, 0);
-	t:SetPoint("BOTTOM", f.bm, "TOP", 0, 0);
-	t:SetTexture(BG_Tex);
-	t:SetTexCoord(14/32, 14/32+6/32, 8/32, 6/32+6/32);
-	f.m = t;
-	
+
 	-- R
 	t = self:CreateTexture(f, 6, 6);
 	t:SetPoint("TOP", f.tr, "BOTTOM", 0, 0);
@@ -562,108 +414,42 @@ function TRB_Runes:CreateBarContainer(w, h)
 	t:SetTexture(BG_Tex);
 	t:SetTexCoord(21/32, 21/32+6/32, 8/32, 6/32+6/32);
 	f.r = t;
-	
-	-- Top 1
-	t = self:CreateTexture(f, 6, 6);
-	t:SetPoint("LEFT", f.tl, "RIGHT", 0, 0);
-	t:SetPoint("RIGHT", f.tm, "LEFT", 0, 0);
-	t:SetTexture(BG_Tex);
-	t:SetTexCoord(8/32, 6/32+6/32, 0, 6/32);
-	f.t1 = t;
-	
-	-- Top 2
-	t = self:CreateTexture(f, 6, 6);
-	t:SetPoint("LEFT", f.tm, "RIGHT", 0, 0);
-	t:SetPoint("RIGHT", f.tr, "LEFT", 0, 0);
-	t:SetTexture(BG_Tex);
-	t:SetTexCoord(8/32, 6/32+6/32, 0, 6/32);
-	f.t2 = t;
-	
-	-- Bottom 1
-	t = self:CreateTexture(f, 6, 6);
-	t:SetPoint("LEFT", f.bl, "RIGHT", 0, 0);
-	t:SetPoint("RIGHT", f.bm, "LEFT", 0, 0);
-	t:SetTexture(BG_Tex);
-	t:SetTexCoord(8/32, 6/32+6/32, 14/32, 14/32+6/32);
-	f.b1 = t;
-	
-	-- Bottom 2
-	t = self:CreateTexture(f, 6, 6);
-	t:SetPoint("LEFT", f.bm, "RIGHT", 0, 0);
-	t:SetPoint("RIGHT", f.br, "LEFT", 0, 0);
-	t:SetTexture(BG_Tex);
-	t:SetTexCoord(8/32, 6/32+6/32, 14/32, 14/32+6/32);
-	f.b2 = t;
-	
+
+	--local width = f.tr:GetLeft() - f.tl:GetRight();
+	local runeWidth = ( FrameWidth ) / 6;
+
+	-- Create the splitters
+	--for i=1,5 do
+	--	t = self:CreateTexture(f, 6, 6);
+	--	t:SetPoint("LEFT", f.t, "LEFT", runeWidth * i - 6, 0);
+	--	t:SetPoint("TOP", f.t, "BOTTOM", 0, 0);
+	--	t:SetPoint("BOTTOM", f.b, "TOP", 0, 0);
+	--	t:SetTexture(BG_Tex);
+	--	t:SetTexCoord(14/32, 14/32+6/32, 8/32, 6/32+6/32);
+	--	t:SetVertexColor(0, 0, 0);
+	--	f["m"..i] = t;
+	--end
+
 	return f;
 end
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 ---------------- Config ------------------------------------------------------------------------------------------
-local DD_items = { "Blood", "Unholy", "Frost" }; -- Dropdown box items
-
 --
 -- OnDefault
 -- Update the settings UI elements.
 --
 function TRB_Runes:OnDefault()
-	self.Order = nil;
-
-	-- Hide/Show DropDown boxes to update values
-	self.DD_Bar1:Hide();
-	self.DD_Bar1:Show();
-	self.DD_Bar2:Hide();
-	self.DD_Bar2:Show();
-	self.DD_Bar3:Hide();
-	self.DD_Bar3:Show();
-	
 	-- Update the Color of the runebars
-	self:UpdateColor(1, 1, 1, 0); -- Rune 1 Bar 1
-	self:UpdateColor(2, 1, 1, 0); -- Rune 2 Bar 1
-	self:UpdateColor(3, 2, 1, 0); -- Rune 3 Bar 2
-	self:UpdateColor(4, 2, 1, 0); -- Rune 4 Bar 2
-	self:UpdateColor(5, 3, 1, 0); -- Rune 5 Bar 3
-	self:UpdateColor(6, 3, 1, 0); -- Rune 6 Bar 3
-
+	self:UpdateColor(1, 0); -- Rune 1 Bar 1
 end
 
 function TRB_Runes:OnCancel()
-	self.Order = nil;
 	-- Reset bar position
 	self:UpdateBarPositions();
 end
 
 function TRB_Runes:OnOkay()
---	if( not TRB_Config.Runes ) then self:LoadConfig(true); end
-	if( not self.cfg.Order ) then 
-		self:Error("[TRB_Runes:OnOkay()] Runes Order not available");
-		self.cfg.Order = {}; 
-	end
-
-	-- Now save the new rune order.
-	if( self.Order ) then
-		TRB_Config.Runes.Order.Blood = self.Order.Blood;
-		TRB_Config.Runes.Order.Unholy = self.Order.Unholy;
-		TRB_Config.Runes.Order.Frost = self.Order.Frost;
-		self.Order = nil;
-		
-		--self:Print("Blood => "..(TRB_Config.Runes.Order.Blood or "nil"));
-		--self:Print("Unholy => "..(TRB_Config.Runes.Order.Unholy or "nil"));
-		--self:Print("Frost => "..(TRB_Config.Runes.Order.Frost or "nil"));
-	end
-	
 	-- Disable/Enable cooldown countdown text
 	local status = self.CB_DisableText:GetChecked();
 	if( status ) then
@@ -675,146 +461,12 @@ function TRB_Runes:OnOkay()
 	self:UpdateBarPositions();
 end
 
-function TRB_Runes:DD_Update(bar1, value1)
-	value1 = DD_items[value1];	-- Get value as text
-	
-	if( not self.Order ) then
-		self.Order = {};
-		-- make it so we can lookup what rune a bar have
-		for k,v in pairs(self.cfg.Order) do
-			self.Order[v] = k;
-			self.Order[k] = v;
-		end
-	end
-
-
---	self:Print(bar1.." set to "..value1);
-	
-
-	-- 1) Find bar2 that value1 has
-	local bar2 = self.Order[value1]; -- Get bar2;
-	-- 2) Find value2 that bar1 has
-	local value2 = self.Order[bar1]; -- Get value2
-	
---	self:Print(bar2.." currently set to "..value1.." changed to "..value2);
-	
-	-- 3) Give bar2 value2
-	UIDropDownMenu_SetSelectedValue(_G["TRB_Runes_"..bar2], value2);
-	
-	-- 4) Save changes
-	self.Order[bar1] = value1;
-	self.Order[bar2] = value2;
-	self.Order[value1] = bar1;
-	self.Order[value2] = bar2;
-	
-	self:UpdateBarPositions();	
-end
-
-function DD_Bar1OnClick(self)
-	UIDropDownMenu_SetSelectedID(TRB_Runes.DD_Bar1, self:GetID())
-	
-	TRB_Runes:DD_Update("Bar1", self:GetID() );
-end
-
-function DD_Bar2OnClick(self)
-	UIDropDownMenu_SetSelectedID(TRB_Runes.DD_Bar2, self:GetID())
-	TRB_Runes:DD_Update("Bar2", self:GetID() );
-end
-
-function DD_Bar3OnClick(self)
-	UIDropDownMenu_SetSelectedID(TRB_Runes.DD_Bar3, self:GetID())
-	TRB_Runes:DD_Update("Bar3", self:GetID() );
-end
-
-function DropDownInit(self, level)
---	DEFAULT_CHAT_FRAME:AddMessage("INIT DD: "..self:GetName() );
-	
-	local info = UIDropDownMenu_CreateInfo()
-	for k,v in pairs(DD_items) do
-		info = UIDropDownMenu_CreateInfo()
-		info.text = v
-		info.value = v
-		if( self:GetName() == "TRB_Runes_Bar1" ) then
-			info.func = DD_Bar1OnClick
-		elseif( self:GetName() == "TRB_Runes_Bar2" ) then
-			info.func = DD_Bar2OnClick
-		else
-			info.func = DD_Bar3OnClick
-		end
-		UIDropDownMenu_AddButton(info, level)
-	end
-end
-
 function TRB_Runes:OnInitOptions(panel)
-
-	local text = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight");
-	text:SetPoint("TOPLEFT", panel, "TOPLEFT", 20, -180);
-	text:SetText("Rune order");
-	
-	local bar1 = CreateFrame("frame", "TRB_Runes_Bar1", panel, "UIDropDownMenuTemplate");
-	bar1:ClearAllPoints();
-	bar1:SetPoint("TOPLEFT", panel, "TOPLEFT", 0, -200);
-	bar1:SetScript("OnShow", function(self) 
-									local o = {};
-									for k,v in pairs(TRB_Config.Runes.Order) do
-										o["TRB_Runes_"..v] = k;
-									end
-									UIDropDownMenu_SetSelectedValue(self, (o[self:GetName()] or "Blood"));
-									UIDropDownMenu_SetText(self, (o[self:GetName()] or "Blood"));
-								end );
-	bar1:Show();
-	self.DD_Bar1 = bar1
-	
-	UIDropDownMenu_Initialize(bar1, DropDownInit)
-	UIDropDownMenu_SetWidth(bar1, 100);
-	UIDropDownMenu_SetButtonWidth(bar1, 124)
-	UIDropDownMenu_JustifyText(bar1, "LEFT")
-
-	local bar2 = CreateFrame("frame", "TRB_Runes_Bar2", panel, "UIDropDownMenuTemplate");
-	bar2:ClearAllPoints();
-	bar2:SetPoint("TOPLEFT", panel, "TOPLEFT", 0+130, -200);
-	bar2:SetScript("OnShow", function(self) 
-									local o = {};
-									for k,v in pairs(TRB_Config.Runes.Order) do
-										o["TRB_Runes_"..v] = k;
-									end
-									--DEFAULT_CHAT_FRAME:AddMessage( self:GetName().." Default "..o[self:GetName()]);
-									UIDropDownMenu_SetSelectedValue(self, (o[self:GetName()] or "Unholy"));
-									UIDropDownMenu_SetText(self, (o[self:GetName()] or "Unholy"));
-								end );
-	bar2:Show();
-	self.DD_Bar2 = bar2
-	
-	UIDropDownMenu_Initialize(bar2, DropDownInit)
-	UIDropDownMenu_SetWidth(bar2, 100);
-	UIDropDownMenu_SetButtonWidth(bar2, 124)
-	UIDropDownMenu_JustifyText(bar2, "LEFT")
-	
-	local bar3 = CreateFrame("frame", "TRB_Runes_Bar3", panel, "UIDropDownMenuTemplate");
-	bar3:ClearAllPoints();
-	bar3:SetPoint("TOPLEFT", panel, "TOPLEFT", 0+260, -200);
-	bar3:SetScript("OnShow", function(self) 
-									local o = {};
-									for k,v in pairs(TRB_Config.Runes.Order) do
-										o["TRB_Runes_"..v] = k;
-									end
-									--DEFAULT_CHAT_FRAME:AddMessage( self:GetName().." Default "..self.o[self:GetName()]);
-									UIDropDownMenu_SetSelectedValue(self, (o[self:GetName()] or "Frost"));
-									UIDropDownMenu_SetText(self, (o[self:GetName()] or "Frost"));
-								end );
-	bar3:Show();
-	self.DD_Bar3 = bar3
-	
-	UIDropDownMenu_Initialize(bar3, DropDownInit)
-	UIDropDownMenu_SetWidth(bar3, 100);
-	UIDropDownMenu_SetButtonWidth(bar3, 124)
-	UIDropDownMenu_JustifyText(bar3, "LEFT")
-	
 	--
 	-- Disable Rune cooldown counter text
 	--
 	local cb = CreateFrame("CheckButton", "TRB_Runes_DisableText", panel, "InterfaceOptionsCheckButtonTemplate");
-	cb:SetPoint("TOPLEFT", panel, "TOPLEFT", 20, -250);
+	cb:SetPoint("TOPLEFT", panel, "TOPLEFT", 20, -150);
 	cb.text = _G[cb:GetName().."Text"];
 	cb.text:SetText("Enable "..self.name.." cooldown counter text");
 	local v = true;
@@ -828,10 +480,7 @@ function TRB_Runes:OnInitOptions(panel)
 	--- Color buttons
 	---
 
-	self:CreateColorButtonOption(panel, "Blood", 20, -300);
-	self:CreateColorButtonOption(panel, "Unholy", 140, -300);
-	self:CreateColorButtonOption(panel, "Frost", 20, -325);
-	self:CreateColorButtonOption(panel, "Death", 140, -325);
+	self:CreateColorButtonOption(panel, "Rune Color", 20, -180);
 end
 
 function TRB_Runes:SetBarTexture(texture)
@@ -848,42 +497,16 @@ function TRB_Runes:SetBarTexture(texture)
 	end
 end
 
-function TRB_Runes:GetConfigColor(module, name)
-
-	local runeType = 0;
-	if( name == "Blood" ) then
-		runeType = 1;
-	elseif( name == "Unholy" ) then
-		runeType = 2;
-	elseif( name == "Frost" ) then
-		runeType = 3;
-	elseif( name == "Death" ) then
-		runeType = 4;
-	end
-
-	return unpack(TRB_Config[module.name].Colors[runeType]);
+function TRB_Runes:GetConfigColor(module)
+	return unpack(TRB_Config[module.name].Colors);
 end
 
 function TRB_Runes:SetBarColor(module, name, r, g, b)
 	module.panel.barcolor[name]:SetTexture(r, g, b);
 
-	local runeType = 0;
 	local newColor = {r, g, b, 1};
 
-	if( name == "Blood" ) then
-		runeType = 1;
-	elseif( name == "Unholy" ) then
-		runeType = 2;
-	elseif( name == "Frost" ) then
-		runeType = 3;
-	elseif( name == "Death" ) then
-		runeType = 4;
-	end
+	TRB_Config[module.name].Color = newColor;
 
-	TRB_Config[module.name].Colors[runeType] = newColor;
-
-	if( runeType < 4 ) then	
-		self:UpdateColor(runeType*2-1, runeType, 1, 0);
-		self:UpdateColor(runeType*2, runeType, 1, 0);
-	end
+	self:UpdateColor();
 end

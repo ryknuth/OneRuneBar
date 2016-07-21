@@ -1,11 +1,11 @@
-## Interface: 60200
+## Interface: 70000
 ## Title: Three Rune Bars
 ## Author: McZ 
-## Version: 6.2.2
+## Version: 7.0.0
 ## SavedVariables: TRB_Config
 ## Notes: Simple 3 Rune bar display. Combines the 2 runes of the same type into one energy like bar.
 ## OptionalDeps: LibSharedMedia-3.0
-## X-Curse-Packaged-Version: 6.2.2
+## X-Curse-Packaged-Version: 7.0.0
 ## X-Curse-Project-Name: ThreeRuneBars
 ## X-Curse-Project-ID: threerunebars
 ## X-Curse-Repository-ID: wow/threerunebars/mainline
