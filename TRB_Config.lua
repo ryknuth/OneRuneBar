@@ -6,14 +6,7 @@ end
 TRB_Config_Defaults = {
 
 	["Runes"] = {
---		["Colors"] = { --> Useless in Legion
---			[1] = { [1] = 1,   [2] = 0,   [3] = 0,   [4] = 1 },		-- RuneType: Blood
---			[2] = { [1] = 0,   [2] = 0.7, [3] = 0,   [4] = 1 },		-- RuneType: Unholy
---			[3] = { [1] = 0,   [2] = 0.3, [3] = 1,   [4] = 1 },		-- RuneType: Frost
---			[4] = { [1] = 0.8, [2] = 0.7,   [3] = 0.9, [4] = 1 },	-- RuneType: Death
---		},
 		["Position"] = { "CENTER", nil, "CENTER", 0, -135, },
---		["Order"] = { ["Blood"] = "Bar1", ["Unholy"] = "Bar2", ["Frost"] = "Bar3" }, --> Useless in Legion
 		["Color"] = { [1] = 0.8, [2] = 0.7,   [3] = 0.9, [4] = 1 },
 	},
 	
@@ -21,7 +14,7 @@ TRB_Config_Defaults = {
 		["Colors"] = { 
 			["ff"] = { 0, 0.5, 1,  1, },		-- Frost Fever
 			["bp"] = { 0, 0.7, 0,  1, },		-- Blood Plague
-			["np"] = { 0.35, 0.17, 0.30,  1, }, -- Necrotic Plague
+			["vp"] = { 0.34, 0.22, 0,  1, }, -- Virulent Plague
 		},
 		["Position"] = { "CENTER", nil, "CENTER", 160, -13, },
 	},

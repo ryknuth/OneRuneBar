@@ -498,7 +498,11 @@ function TRB_Runes:SetBarTexture(texture)
 end
 
 function TRB_Runes:GetConfigColor(module)
-	return unpack(TRB_Config[module.name].Colors);
+	if( not TRB_Config[module.name].Color ) then
+		TRB_Config[module.name].Color = TRB_Config_Defaults[module.name].Color;
+	end
+
+	return unpack(TRB_Config[module.name].Color);
 end
 
 function TRB_Runes:SetBarColor(module, name, r, g, b)
