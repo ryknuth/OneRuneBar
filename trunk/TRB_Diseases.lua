@@ -6,7 +6,7 @@ end
 local BG_Tex = "Interface\\AddOns\\ThreeRuneBars\\borders.tga";
 local FF_Icon = "Interface\\Icons\\Spell_DeathKnight_FrostFever";
 local BP_Icon = "Interface\\Icons\\Spell_DeathKnight_BloodPlague";
-local NP_Icon = "Interface\\Icons\\Spell_DeathKnight_NecroticPlague";
+local VP_Icon = "Interface\\Icons\\ability_creature_disease_02";
 
 local BarSize = {
 	["Width"] = 98,
@@ -45,99 +45,74 @@ function TRB_Diseases:OnEnable()
 		f:SetFrameStrata("HIGH"); -- Set to HIGH framestrata to be visible ontop of Blizzards "Power Aura" thing
 		f.owner = self;
 		self.frame = f;
-		
-		self.FrostFever	= self:CreateBarContainer(BarSize.Width, BarSize.Height);
-		self.FrostFever:SetPoint("TOPLEFT", f, "BOTTOMLEFT", 20, -4);
-		self.BloodPlague = self:CreateBarContainer(BarSize.Width, BarSize.Height);
-		self.BloodPlague:SetPoint("TOP", self.FrostFever, "BOTTOM", 0, -8);
-		
+
+		self.DiseaseBarContainer = self:CreateBarContainer(BarSize.Width, BarSize.Height);
+		self.DiseaseBarContainer:SetPoint("TOPLEFT", f, "BOTTOMLEFT", 20, -4);
+
 		-- Create Icons
 		local icon;
-		icon = self.FrostFever:CreateTexture(nil, "OVERLAY"); icon:ClearAllPoints(); icon:SetTexture(FF_Icon);
-		icon:SetPoint("RIGHT", self.FrostFever, "LEFT", -2, 0);
-		icon:SetWidth(18); icon:SetHeight(18);
-		self.FrostFever.icon = icon;
-		
-		icon = self.BloodPlague:CreateTexture(nil, "OVERLAY"); icon:ClearAllPoints(); icon:SetTexture(BP_Icon);
-		icon:SetPoint("RIGHT", self.BloodPlague, "LEFT", -2, 0);
-		icon:SetWidth(18); icon:SetHeight(18);
-		self.BloodPlague.icon = icon;
-		
+		icon = self.DiseaseBarContainer:CreateTexture(nil, "OVERLAY");
+		icon:ClearAllPoints();
+		icon:SetPoint("RIGHT", self.DiseaseBarContainer, "LEFT", -2, 0);
+		icon:SetWidth(18);
+		icon:SetHeight(18);
+		self.DiseaseBarContainer.icon = icon;
+
 		self:CreateMoveFrame();
 	end
 
-	if( not self.Bars ) then
+	if( not self.DiseaseBar ) then
 
-		local ff = self:CreateBar("Frost_Fever", self.frame);
-		local bp = self:CreateBar("Blood_Plague", self.frame);
-		
-		ff:SetValue(0);
-		bp:SetValue(0);
-		
-		ff:SetWidth(BarSize.Width);
-		ff:SetHeight(BarSize.Height);
-		bp:SetWidth(BarSize.Width);
-		bp:SetHeight(BarSize.Height);
-		ff:SetStatusBarColor( TRB_Config[self.name].Colors["ff"][1], TRB_Config[self.name].Colors["ff"][2], TRB_Config[self.name].Colors["ff"][3] );
-		bp:SetStatusBarColor( TRB_Config[self.name].Colors["bp"][1], TRB_Config[self.name].Colors["bp"][2], TRB_Config[self.name].Colors["bp"][3] );
-		ff:Show();
-		bp:Show();
-		
-		ff.id = "Frost Fever";
-		bp.id = "Blood Plague";
-		
-		ff:SetPoint("TOPLEFT", self.FrostFever, "TOPLEFT", 2, -2);
-		bp:SetPoint("TOPLEFT", self.BloodPlague, "TOPLEFT", 2, -2);
-		
-		-- Bars
-		self.Bars = {};
-		self.Bars["ff"] = ff;
-		self.Bars["bp"] = bp;
+		local bar = self:CreateBar("Disease_Bar", self.frame);
+		bar:SetValue(0);
+		bar:SetWidth(BarSize.Width);
+		bar:SetHeight(BarSize.Height);
+		bar:Show();
+		bar:SetPoint("TOPLEFT", self.DiseaseBarContainer, "TOPLEFT", 2, -2);
+		self.DiseaseBar = bar;
 	end
 
 	if(self.cfg.Texture) then
 		self:SetBarTexture(self.cfg.Texture);
 	end
-	
-	-- Check if player is using Necrotic Plague	
-	self:CheckNecroticPlague();
+
+	self:UpdateDiseaseNameAndIcon();
 
 	self.frame:RegisterEvent("UNIT_AURA");
 	self.frame:RegisterEvent("PLAYER_TARGET_CHANGED");
-	self.frame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED");
+	self.frame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 
 	self.last = 0;
 	self.frame:SetScript("OnEvent", function(frame, event, ...) frame.owner[event](frame.owner, ...); end );
 	self.frame:SetScript("OnUpdate", function(frame, elapsed) frame.owner:OnUpdate(elapsed); end );
-	
+
 	self.frame:Hide();
 end
 
-function TRB_Diseases:ACTIVE_TALENT_GROUP_CHANGED()
-	self:CheckNecroticPlague();
+function TRB_Diseases:PLAYER_SPECIALIZATION_CHANGED()
+	self:UpdateDiseaseNameAndIcon();
 end
 
-function TRB_Diseases:CheckNecroticPlague()
-	local specGroup = GetActiveSpecGroup();
-	local id, name, icon, selected, available = GetTalentInfo(7, 1, specGroup );
-	if ( selected ) then
-		--print ("TRB_Diseases: "..name.." is enabled");
-		self.BloodPlague:Hide();
-		self.FrostFever.icon:SetTexture(NP_Icon);
-		self.Bars["bp"]:Hide();
-		self.Bars["ff"].id = "Necrotic Plague";
-		self.Bars["ff"]:SetStatusBarColor( TRB_Config[self.name].Colors["np"][1], TRB_Config[self.name].Colors["np"][2], TRB_Config[self.name].Colors["np"][3] );
+function TRB_Diseases:UpdateDiseaseNameAndIcon()
+	local specId = GetSpecialization();
+	if( not specId ) then return; end
+	if ( specId == 1 ) then
+		self.DiseaseBarContainer.icon:SetTexture(BP_Icon);
+		self.DiseaseBar.id = "Blood Plague";
+		self.DiseaseBar:SetStatusBarColor( TRB_Config[self.name].Colors["bp"][1], TRB_Config[self.name].Colors["bp"][2], TRB_Config[self.name].Colors["bp"][3] );
+	elseif( specId == 2 ) then
+		self.DiseaseBarContainer.icon:SetTexture(FF_Icon);
+		self.DiseaseBar.id = "Frost Fever";
+		self.DiseaseBar:SetStatusBarColor( TRB_Config[self.name].Colors["ff"][1], TRB_Config[self.name].Colors["ff"][2], TRB_Config[self.name].Colors["ff"][3] );
 	else
-		self.BloodPlague:Show();
-		self.FrostFever.icon:SetTexture(FF_Icon);
-		self.Bars["bp"]:Show();
-		self.Bars["ff"].id = "Frost Fever";
-		self.Bars["ff"]:SetStatusBarColor( TRB_Config[self.name].Colors["ff"][1], TRB_Config[self.name].Colors["ff"][2], TRB_Config[self.name].Colors["ff"][3] );
+		self.DiseaseBarContainer.icon:SetTexture(VP_Icon);
+		self.DiseaseBar.id = "Virulent Plague";
+		self.DiseaseBar:SetStatusBarColor( TRB_Config[self.name].Colors["vp"][1], TRB_Config[self.name].Colors["vp"][2], TRB_Config[self.name].Colors["vp"][3] );
 	end
 end
 
-function TRB_Diseases:UpdateDiseaseBar(disease)
-		local bar = self.Bars[disease];
+function TRB_Diseases:UpdateDiseaseBar()
+		local bar = self.DiseaseBar;
 
 		local name, _, icon, _,_,  duration, expirationTime, _ = UnitAura("target", bar.id, nil, "PLAYER|HARMFUL");
 		
@@ -150,9 +125,7 @@ function TRB_Diseases:UpdateDiseaseBar(disease)
 			bar:SetValue(val);
 			
 			bar.text:SetText( valT );
---			bar:Show();
 		else
---			bar:Hide();
 			bar:SetValue(0);
 			bar.text:SetText();
 		end
@@ -166,8 +139,7 @@ function TRB_Diseases:showBars(v)
 		self.frame:Hide();
 		--self:SetFrameStrata("MEDIUM");
 		self.needUpdate = false;
-		self.Bars["ff"]:SetValue(0);
-		self.Bars["bp"]:SetValue(0);
+		self.DiseaseBar:SetValue(0);
 	end
 end
 
@@ -176,7 +148,6 @@ end
 
 function TRB_Diseases:PLAYER_TARGET_CHANGED()
 	if( UnitExists("target")) then
-		self:CheckNecroticPlague();
 		self:showBars(true);
 	else
 		self:showBars(false);
@@ -185,13 +156,12 @@ end
 
 function TRB_Diseases:OnUpdate(elapsed)
 	self.last = self.last + elapsed;
-	
+
 	if( self.last > 0.01 ) then
 		if( self.needUpdate) then
-			self:UpdateDiseaseBar("ff");
-			self:UpdateDiseaseBar("bp");
+			self:UpdateDiseaseBar();
 		end
-		
+
 		self.last = 0;
 	end
 end
@@ -288,17 +258,15 @@ function TRB_Diseases:SetBarTexture(texture)
 		return;
 	end
 
-	for k,v in pairs(self.Bars) do
-		v:SetStatusBarTexture(SM:Fetch(SM.MediaType.STATUSBAR,texture));
-		v:GetStatusBarTexture():SetHorizTile(false);
-		v:GetStatusBarTexture():SetVertTile(false);
-	end
+	self.DiseaseBar:SetStatusBarTexture(SM:Fetch(SM.MediaType.STATUSBAR,texture));
+	self.DiseaseBar:GetStatusBarTexture():SetHorizTile(false);
+	self.DiseaseBar:GetStatusBarTexture():SetVertTile(false);
 end
 
 function TRB_Diseases:OnInitOptions(panel)
 	self:CreateColorButtonOption(panel, "FFever", 420, -80);
 	self:CreateColorButtonOption(panel, "BPlague", 420, -110);
-	self:CreateColorButtonOption(panel, "NPlague", 420, -140);
+	self:CreateColorButtonOption(panel, "VPlague", 420, -140);
 end
 
 function TRB_Diseases:GetConfigColor(module, name)
@@ -312,11 +280,11 @@ function TRB_Diseases:GetConfigColor(module, name)
 			TRB_Config[module.name].Colors["bp"] = TRB_Config_Defaults[module.name].Colors["bp"];
 		end
 		return unpack(TRB_Config[module.name].Colors["bp"]);
-	elseif( name == "NPlague" ) then
-		if( not TRB_Config[module.name].Colors["np"] ) then
-			TRB_Config[module.name].Colors["np"] = TRB_Config_Defaults[module.name].Colors["np"];
+	elseif( name == "VPlague" ) then
+		if( not TRB_Config[module.name].Colors["vp"] ) then
+			TRB_Config[module.name].Colors["vp"] = TRB_Config_Defaults[module.name].Colors["vp"];
 		end
-		return unpack(TRB_Config[module.name].Colors["np"]);
+		return unpack(TRB_Config[module.name].Colors["vp"]);
 	end
 	module:Print("TRB BUG: Didn't find color config name: "..name);
 end
@@ -329,7 +297,7 @@ function TRB_Diseases:SetBarColor(module, name, r, g, b)
 		TRB_Config[module.name].Colors["ff"] = newColor;
 	elseif( name == "BPlague" ) then
 		TRB_Config[module.name].Colors["bp"] = newColor;
-	elseif( name == "NPlague" ) then
+	elseif( name == "VPlague" ) then
 		TRB_Config[module.name].Colors["np"] = newColor;
 	end
 end
