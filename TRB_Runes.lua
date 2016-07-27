@@ -169,7 +169,7 @@ function TRB_Runes:UpdateRuneInfoTable()
 			local start, duration, ready = GetRuneCooldown( runeIndex );
 			local value = GetTime() - start;
 
-			if( value < 0 ) then value = 0 end;
+			if( not value or value < 0 ) then value = 0 end;
 
 			self.RuneInfoTable[runeIndex][2] = value;
 			self.RuneInfoTable[runeIndex][3] = duration;
@@ -178,7 +178,7 @@ function TRB_Runes:UpdateRuneInfoTable()
 	end
 end
 
-function sort(t)
+function TRB_sort(t)
 	local itemCount = #t;
 
 	local hasChanged = true;
@@ -204,7 +204,7 @@ function TRB_Runes:SortRuneInfos()
 		self.SortedRuneInfos[runeIndex] = self.RuneInfoTable[runeIndex];
 	end
 
-	sort(self.SortedRuneInfos);
+	TRB_sort(self.SortedRuneInfos);
 end
 
 function TRB_Runes:UpdateFullBar()

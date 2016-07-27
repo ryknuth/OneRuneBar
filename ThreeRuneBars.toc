@@ -1,9 +1,9 @@
 ## Interface: 70000
 ## Title: Three Rune Bars
 ## Author: McZ 
-## Version: 7.0.1
+## Version: 7.0.2
 ## SavedVariables: TRB_Config
-## Notes: Simple 3 Rune bar display. Combines the 2 runes of the same type into one energy like bar.
+## Notes: Simple 1 Rune bar display. Combines all 6 runes into one energy like bar.
 ## OptionalDeps: LibSharedMedia-3.0
 ## X-Curse-Packaged-Version: 7.0.1
 ## X-Curse-Project-Name: ThreeRuneBars
@@ -19,6 +19,5 @@ ThreeRuneBars.lua
 TRB_Runes.lua
 TRB_RunicPower.lua
 TRB_Diseases.lua
-TRB_HornOfWinter.lua
 
 TRB_Options.lua
