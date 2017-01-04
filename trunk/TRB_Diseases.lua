@@ -3,15 +3,11 @@ if select(2, UnitClass("player")) ~= "DEATHKNIGHT" then
 end
 
 ------------------------------------------------------------------------
-local BG_Tex = "Interface\\AddOns\\ThreeRuneBars\\borders.tga";
 local FF_Icon = "Interface\\Icons\\Spell_DeathKnight_FrostFever";
 local BP_Icon = "Interface\\Icons\\Spell_DeathKnight_BloodPlague";
 local VP_Icon = "Interface\\Icons\\ability_creature_disease_02";
 
-local BarSize = {
-	["Width"] = 98,
-	["Height"] = 8,
-};
+local IconSize = 18;
 
 ------------------------------------------------------------------------
 
@@ -33,28 +29,31 @@ function TRB_Diseases:getDefault(val)
 end
 
 function TRB_Diseases:OnEnable()
+	local borderSize = self:Config_GetBorderSize();
+	local barSize = self:Config_GetBarSize();
+	
 	if( not self.frame ) then
 		local f = CreateFrame("frame", nil, UIParent);
 	
 		-- Set Position and size
 		f:ClearAllPoints();
-		f:SetWidth(128);
+		f:SetWidth(self:Config_GetBarSize()[1] + 30);
 		f:SetHeight(12);
 		f:SetPoint("CENTER", UIParent, "CENTER", 0, 0);
 		f:SetFrameStrata("HIGH"); -- Set to HIGH framestrata to be visible ontop of Blizzards "Power Aura" thing
 		f.owner = self;
 		self.frame = f;
 
-		self.DiseaseBarContainer = self:CreateBarContainer(BarSize.Width, BarSize.Height);
-		self.DiseaseBarContainer:SetPoint("TOPLEFT", f, "BOTTOMLEFT", 20, -4);
+		self.DiseaseBarContainer = self:CreateBarContainer(barSize[1], barSize[2]);
+		self.DiseaseBarContainer:SetPoint("TOPLEFT", f, "BOTTOMLEFT", IconSize + 2, -4);
 
 		-- Create Icons
 		local icon;
 		icon = self.DiseaseBarContainer:CreateTexture(nil, "OVERLAY");
 		icon:ClearAllPoints();
 		icon:SetPoint("RIGHT", self.DiseaseBarContainer, "LEFT", -2, 0);
-		icon:SetWidth(18);
-		icon:SetHeight(18);
+		icon:SetWidth(IconSize);
+		icon:SetHeight(IconSize);
 		self.DiseaseBarContainer.icon = icon;
 
 		self:CreateMoveFrame();
@@ -64,10 +63,9 @@ function TRB_Diseases:OnEnable()
 
 		local bar = self:CreateBar("Disease_Bar", self.frame);
 		bar:SetValue(0);
-		bar:SetWidth(BarSize.Width);
-		bar:SetHeight(BarSize.Height);
 		bar:Show();
-		bar:SetPoint("TOPLEFT", self.DiseaseBarContainer, "TOPLEFT", 2, -2);
+		bar:SetPoint("TOPLEFT", self.DiseaseBarContainer, "TOPLEFT", borderSize, -(borderSize));
+		bar:SetPoint("BOTTOMRIGHT", self.DiseaseBarContainer, "BOTTOMRIGHT", -(borderSize), borderSize);
 		self.DiseaseBar = bar;
 	end
 
@@ -136,7 +134,6 @@ function TRB_Diseases:showBars(v)
 		self.needUpdate = true;
 	else
 		self.frame:Hide();
-		--self:SetFrameStrata("MEDIUM");
 		self.needUpdate = false;
 		self.DiseaseBar:SetValue(0);
 	end
@@ -167,86 +164,16 @@ end
 
 -- Create a holder frame for each bar (this is not the statusbars, just the background)
 function TRB_Diseases:CreateBarContainer(w, h)
+	local borderSize = self:Config_GetBorderSize();
+
 	local f = CreateFrame("frame", nil, self.frame)
 	-- Set position
-	f:SetWidth(w+2+2);
-	f:SetHeight(h+2+2);
---	f:SetFrameStrata("HIGH");
+	f:SetWidth(w + 2 * borderSize);
+	f:SetHeight(h + 2 * borderSize);
 	f:Show();
-	
-	-- Corners
-	
-	-- TL
-	local t = self:CreateTexture(f, 6, 6);
-	t:SetPoint("CENTER", f, "TOPLEFT", 0, 0);
-	t:SetTexture(BG_Tex);
-	t:SetTexCoord(0, 6/32, 0, 6/32);
-	t:SetVertexColor(0, 0, 0, 1);
-	f.tl = t;
-	
-	-- BL
-	t = self:CreateTexture(f, 6, 6);
-	t:SetPoint("CENTER", f, "BOTTOMLEFT", 0, 0);
-	t:SetTexture(BG_Tex);
-	t:SetTexCoord(0, 6/32, 14/32, 14/32+6/32);
-	t:SetVertexColor(0, 0, 0, 1);
-	f.bl = t;
-	
-	-- TR
-	t = self:CreateTexture(f, 6, 6);
-	t:SetPoint("CENTER", f, "TOPRIGHT", 0, 0);
-	t:SetTexture(BG_Tex);
-	t:SetTexCoord(21/32, 21/32+6/32, 0, 6/32);
-	t:SetVertexColor(0, 0, 0, 1);
-	f.tr = t;
-	
-	-- BR
-	t = self:CreateTexture(f, 6, 6);
-	t:SetPoint("CENTER", f, "BOTTOMRIGHT", 0, 0);
-	t:SetTexture(BG_Tex);
-	t:SetTexCoord(21/32, 21/32+6/32, 14/32, 14/32+6/32);
-	t:SetVertexColor(0, 0, 0, 1);
-	f.br = t;
-	
-	
-	-- Sizeable parts
-	
-	-- L
-	t = self:CreateTexture(f, 6, 6);
-	t:SetPoint("TOP", f.tl, "BOTTOM", 0, 0);
-	t:SetPoint("BOTTOM", f.bl, "TOP", 0, 0);
-	t:SetTexture(BG_Tex);
-	t:SetTexCoord(0, 6/32, 8/32, 6/32+6/32);
-	t:SetVertexColor(0, 0, 0, 1);
-	f.l = t;
-	
-	-- R
-	t = self:CreateTexture(f, 6, 6);
-	t:SetPoint("TOP", f.tr, "BOTTOM", 0, 0);
-	t:SetPoint("BOTTOM", f.br, "TOP", 0, 0);
-	t:SetTexture(BG_Tex);
-	t:SetTexCoord(21/32, 21/32+6/32, 8/32, 6/32+6/32);
-	t:SetVertexColor(0, 0, 0, 1);
-	f.r = t;
-	
-	-- Top
-	t = self:CreateTexture(f, 6, 6);
-	t:SetPoint("LEFT", f.tl, "RIGHT", 0, 0);
-	t:SetPoint("RIGHT", f.tr, "LEFT", 0, 0);
-	t:SetTexture(BG_Tex);
-	t:SetTexCoord(8/32, 6/32+6/32, 0, 6/32);
-	t:SetVertexColor(0, 0, 0, 1);
-	f.t = t;
-	
-	-- Bottom
-	t = self:CreateTexture(f, 6, 6);
-	t:SetPoint("LEFT", f.bl, "RIGHT", 0, 0);
-	t:SetPoint("RIGHT", f.br, "LEFT", 0, 0);
-	t:SetTexture(BG_Tex);
-	t:SetTexCoord(8/32, 6/32+6/32, 14/32, 14/32+6/32);
-	t:SetVertexColor(0, 0, 0, 1);
-	f.b = t;
-	
+
+	self:CreateBorder(f, borderSize);
+
 	return f;
 end
 

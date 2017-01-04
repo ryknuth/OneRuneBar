@@ -6,7 +6,9 @@ end
 TRB_Config_Defaults = {
 	["Runes"] = {
 		["Position"] = { "CENTER", nil, "CENTER", 0, -135, },
-		["Color"] = { [1] = 0.8, [2] = 0.7,   [3] = 0.9, [4] = 1 },
+		["Color"] = { [1] = 0.8, [2] = 0.7, [3] = 0.9, [4] = 1 },
+		["BarSize"] = { 46, 10 },
+		["BorderSize"] = 1,
 	},
 
 	["Diseases"] = {
@@ -16,11 +18,15 @@ TRB_Config_Defaults = {
 			["vp"] = { 0.34, 0.22, 0,  1, },	-- Virulent Plague
 		},
 		["Position"] = { "CENTER", nil, "CENTER", 160, -13, },
+		["BarSize"] = { 98, 10 },
+		["BorderSize"] = 1,
 	},
 
 	["RunicPower"] = {
 		["Colors"] = { [1] = 0.2, [2] = 0.7, [3] = 1,   [4] = 1 },
 		["Position"] = { "CENTER", nil, "CENTER", 0, -150, },
+		["BarSize"] = { 306, 10 },
+		["BorderSize"] = 1,
 	},
 
 	-- Out of Combat settings
