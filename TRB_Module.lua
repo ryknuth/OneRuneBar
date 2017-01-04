@@ -97,7 +97,7 @@ function TRB_Module:CreateBar(name, parent)
 	
 	Bar.bg = Bar:CreateTexture(nil, "BACKGROUND");
 	Bar.bg:SetAllPoints(Bar);
-	Bar.bg:SetTexture(0.25, 0.25, 0.25, 0.5);
+	Bar.bg:SetColorTexture(0.25, 0.25, 0.25, 0.5);
 	
 	-- Create text on bar
 	local text = Bar:CreateFontString(nil, "ARTWORK", "GameFontHighlightExtraSmall");
@@ -119,7 +119,7 @@ function TRB_Module:CreateMoveFrame()
 	
 	f.bg = f:CreateTexture(nil, "ARTWORK");
 	f.bg:SetAllPoints(f);
-	f.bg:SetTexture(0.8,0.8,0.8, 0.4);
+	f.bg:SetColorTexture(0.8,0.8,0.8, 0.4);
 	f:SetFrameStrata("HIGH");
 	f:Hide();
 	
@@ -348,7 +348,7 @@ function TRB_Module:CreateColorButtonOption(panel, name, x, y)
 	tex:SetWidth(20);
 	tex:SetHeight(20);
 	tex:SetPoint("LEFT", btn, "RIGHT", 10, 0);
-	tex:SetTexture( self:GetConfigColor(self, name) );
+	tex:SetColorTexture( self:GetConfigColor(self, name) );
 
 	if( not panel.barcolor ) then
 		panel.barcolor = {};

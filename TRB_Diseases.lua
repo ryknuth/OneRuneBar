@@ -33,7 +33,6 @@ function TRB_Diseases:getDefault(val)
 end
 
 function TRB_Diseases:OnEnable()
-	
 	if( not self.frame ) then
 		local f = CreateFrame("frame", nil, UIParent);
 	
@@ -290,7 +289,7 @@ function TRB_Diseases:GetConfigColor(module, name)
 end
 
 function TRB_Diseases:SetBarColor(module, name, r, g, b)
-	module.panel.barcolor[name]:SetTexture(r, g, b);
+	module.panel.barcolor[name]:SetColorTexture(r, g, b);
 
 	local newColor = {r, g, b, 1};
 	if( name == "FFever" ) then
