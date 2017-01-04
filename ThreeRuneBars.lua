@@ -67,20 +67,6 @@ function ThreeRuneBars:PET_BATTLE_OVER()
 	end
 end
 
---[[
-function ThreeRuneBars:init()
-	self.isLocked = true;
-
-	self:RegisterEvent("ADDON_LOADED");
-	-- OOC Fader
---	self:RegisterEvent("PLAYER_REGEN_ENABLED");
---	self:RegisterEvent("PLAYER_REGEN_DISABLED");
-
-	self:SetScript("OnEvent", function(frame, event, ...) frame[event](frame, ...); end );
-	
-end
---]]
-
 function ThreeRuneBars:Unlock()
 	DEFAULT_CHAT_FRAME:AddMessage("ThreeRuneBars Unlocked");
 	self.isLocked = false;
@@ -125,9 +111,7 @@ end
 
 function ThreeRuneBars:StartModules()
 	for name, m in pairs(self.modules) do
---		DEFAULT_CHAT_FRAME:AddMessage("Working on: "..name);
 		if( not (TRB_Config.disabled_modules and TRB_Config.disabled_modules[name] and TRB_Config.disabled_modules[name] == true) ) then
-			--DEFAULT_CHAT_FRAME:AddMessage("ThreeRuneBars loading module: "..name);
 			m:init();
 			m:LoadPosition();
 		else
@@ -154,11 +138,6 @@ function ThreeRuneBars:ADDON_LOADED(addon)
 		-- Start sub modules like Runes, RunicPower and Diseases
 		self:StartModules();
 		
-		-- Update user scale settings ( done at module:Enable too? )
---		if( TRB_Config.Scale ) then
---			self:ChangeScale(TRB_Config.Scale);
---		end
-		
 		-- Register OOC Fader events
 		self:RegisterEvent("PLAYER_REGEN_ENABLED");
 		self:RegisterEvent("PLAYER_REGEN_DISABLED");
@@ -169,6 +148,3 @@ function ThreeRuneBars:ADDON_LOADED(addon)
 		self:PLAYER_REGEN_ENABLED();
 	end
 end
-
--- Start Addon
---ThreeRuneBars:init();

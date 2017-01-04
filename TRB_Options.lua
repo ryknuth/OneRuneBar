@@ -7,9 +7,6 @@ end
 TRB_Options = {};
 
 function TRB_Options:init()
-
---	self:LoadConfig();
-
 	--
 	-- Make sure we have our configuration available
 	--
@@ -133,8 +130,6 @@ function TRB_Options:Default()
 			m:_OnDefault();
 		end
 	end
-
-	--ThreeRuneBars:StartModules();
 end
 
 function TRB_Options:SetScaleValue(slider, value)
@@ -151,12 +146,6 @@ function TRB_Options:SetOOCAlphaValue(slider, value)
 	ThreeRuneBars:UpdateCombatFading(value);
 end
 
-
-
-
-
-
-
 -- add Options to TRB
 ThreeRuneBars.Options = TRB_Options;
 
@@ -171,7 +160,8 @@ local function TRB_SlashHandler(msg, editbox)
 --	return;
 
 	if(msg == "config") then
-		InterfaceOptionsFrame_OpenToCategory(TRB_Options.panel);
+		InterfaceOptionsFrame_OpenToCategory(TRB_Options.panel.name);
+		InterfaceOptionsFrame_OpenToCategory(TRB_Options.panel.name);
 	elseif( not msg or msg=="" or msg=="lock" or msg=="unlock" ) then
 		if( ThreeRuneBars.isLocked ) then
 			ThreeRuneBars:Unlock();

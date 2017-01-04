@@ -53,12 +53,6 @@ end
 --
 function TRB_Module:init()
 	if( self.isRunning ) then return; end
-	
--- This should alreay have been checked in InitOptions()
-	-- Get this module settings
---	if( not TRB_Config[self.name] ) then
---		self:ResetConfig(); -- No config exists for this module. Reset to default values needed for this module.
---	end
 
 	if( not self.cfg ) then
 		self.cfg = TRB_Config[self.name];
@@ -77,12 +71,10 @@ function TRB_Module:init()
 end
 
 function TRB_Module:CreateTexture(f, w, h)
-		local tex = f:CreateTexture(nil, "BACKGROUND");
-		tex:SetWidth(w);
-		tex:SetHeight(h);
-		tex:SetPoint("CENTER", f, "CENTER", 0, 0);
---		tex:SetTexture(BG_Tex);
-		
+	local tex = f:CreateTexture(nil, "BACKGROUND");
+	tex:SetWidth(w);
+	tex:SetHeight(h);
+	tex:SetPoint("CENTER", f, "CENTER", 0, 0);
 	return tex;
 end
 
@@ -124,6 +116,21 @@ function TRB_Module:CreateMoveFrame()
 	f:Hide();
 	
 	self.moveFrame = f;
+end
+
+function TRB_Module:CreateBorderTexture(f, from, to, borderSize)
+	local t = self:CreateTexture(f, borderSize, borderSize);
+	t:SetPoint(from, f, to, 0, 0);
+	t:SetPoint(to, f, from, 0, 0);
+	t:SetColorTexture( 0.0, 0.0, 0.0 );
+	return t;
+end
+
+function TRB_Module:CreateBorder(f, borderSize)
+	f.t = self:CreateBorderTexture( f, "TOPLEFT", "TOPRIGHT", borderSize );
+	f.b = self:CreateBorderTexture( f, "BOTTOMLEFT", "BOTTOMRIGHT", borderSize );
+	f.l = self:CreateBorderTexture( f, "TOPLEFT", "BOTTOMLEFT", borderSize );
+	f.r = self:CreateBorderTexture( f, "TOPRIGHT", "BOTTOMRIGHT", borderSize );
 end
 
 function TRB_Module:Disable()
@@ -236,7 +243,7 @@ function TRB_Module:InitOptions(parent)
 	
 	-- Module disable checkbox
 	local cb = CreateFrame("CheckButton", "TRB_DisableModule_"..self.name, panel, "InterfaceOptionsCheckButtonTemplate");
-	cb:SetPoint("TOPLEFT", panel, "TOPLEFT", xoff, yoff-40);
+	cb:SetPoint("TOPLEFT", header, "TOPLEFT", 0, yoff);
 	cb.text = _G[cb:GetName().."Text"];
 	cb.text:SetText("Enable "..self.name.." module");
 	local v = true;
@@ -248,7 +255,7 @@ function TRB_Module:InitOptions(parent)
 	
 	-- Scale
 	local slider = CreateFrame("slider", "TRB_ModuleScaleSlider_"..self.name, panel, "OptionsSliderTemplate");
-	slider:SetPoint("TOPLEFT", panel, "TOPLEFT", xoff, yoff-90);
+	slider:SetPoint("TOPLEFT", cb, "BOTTOMLEFT", 0, yoff);
 	slider:SetWidth(200);
 	slider:SetHeight(20);
 	slider:SetOrientation("HORIZONTAL");
@@ -267,12 +274,12 @@ function TRB_Module:InitOptions(parent)
 
 	-- Texture options
 	local textureText = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight");
-	textureText:SetPoint("TOPLEFT", panel, "TOPLEFT", xoff+260, yoff-77);
+	textureText:SetPoint("TOPLEFT", slider, "TOPRIGHT", xoff, 15);
 	textureText:SetText("Texture");
 
 	local textureDD = CreateFrame("frame", "TRB_ModuleTextureDD_"..self.name, panel, "UIDropDownMenuTemplate");
 	textureDD:ClearAllPoints();
-	textureDD:SetPoint("TOPLEFT", panel, "TOPLEFT", xoff+240, yoff-90);
+	textureDD:SetPoint("TOPLEFT", textureText, "BOTTOMLEFT", -20, 0);
 	textureDD:SetScript("OnShow", function(self)
 									UIDropDownMenu_SetSelectedValue(self, TRB_Config[self.owner.name].Texture or NoTextureText);
 									UIDropDownMenu_SetText(self, TRB_Config[self.owner.name].Texture or NoTextureText);
@@ -317,6 +324,33 @@ function TRB_Module:InitOptions(parent)
 	UIDropDownMenu_SetButtonWidth(textureDD, 124);
 	UIDropDownMenu_JustifyText(textureDD, "LEFT");
 
+	local borderSizeLabel = self:CreateLabel( panel, "Border Size:");
+	borderSizeLabel:SetPoint("TOPLEFT", slider, "BOTTOMLEFT", 0, yoff);
+	
+	local borderSizeBox = self:CreateEditBox( panel, "TRB_ModuleBorderSizeEditBox_"..self.name,
+		function(self) return self:Config_GetBorderSize(); end,
+		function(self, value) self:Config_SetBorderSize(value); end );
+	borderSizeBox:SetPoint("TOPLEFT", borderSizeLabel, "TOPRIGHT", 4, 0);
+	borderSizeBox:SetPoint("BOTTOMLEFT", borderSizeLabel, "BOTTOMRIGHT", 0, 0);
+
+	local barWidthLabel = self:CreateLabel( panel, "Bar Width:");
+	barWidthLabel:SetPoint("TOPLEFT", borderSizeLabel, "BOTTOMLEFT", 0, yoff);
+	
+	local barWidthBox = self:CreateEditBox( panel, "TRB_ModuleBarWidthEditBox_"..self.name,
+		function(self) return self:Config_GetBarSize()[1]; end,
+		function(self, value) self:Config_SetBorderSize(value, self:Config_GetBarSize()[2]); end );
+	barWidthBox:SetPoint("TOPLEFT", barWidthLabel, "TOPRIGHT", 4, 0);
+	barWidthBox:SetPoint("BOTTOMLEFT", barWidthLabel, "BOTTOMRIGHT", 0, 0);
+
+	local barHeightLabel = self:CreateLabel( panel, "Height:");
+	barHeightLabel:SetPoint("TOPLEFT", barWidthBox, "TOPRIGHT", 4, 0);
+	
+	local barHeightBox = self:CreateEditBox( panel, "TRB_ModuleBarHeightEditBox_"..self.name,
+		function(self) return self:Config_GetBarSize()[2]; end,
+		function(self, value) self:Config_SetBorderSize(self:Config_GetBarSize()[1], value); end );
+	barHeightBox:SetPoint("TOPLEFT", barHeightLabel, "TOPRIGHT", 4, 0);
+	barHeightBox:SetPoint("BOTTOMLEFT", barHeightLabel, "BOTTOMRIGHT", 0, 0);
+
 	if( self.OnInitOptions ) then self:OnInitOptions(panel); end
 	
 	--
@@ -357,6 +391,28 @@ function TRB_Module:CreateColorButtonOption(panel, name, x, y)
 	panel.barcolor[name] = tex;
 end
 
+function TRB_Module:CreateLabel( panel, labelText )
+	local label = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight");
+	label:SetText(labelText);
+	return label
+end
+
+function TRB_Module:CreateEditBox( panel, name, getConfigFunc, setConfigFunc )
+	local box = CreateFrame( "editbox", name, panel, "InputBoxTemplate");
+	box.owner = self;
+	box:SetHeight(30);
+	box:SetWidth(30);
+	box:SetAutoFocus(false);
+	box:SetMaxLetters(3);
+	box:SetNumeric(true);
+
+	box:SetScript("OnShow", function(self) self:SetText(getConfigFunc(self.owner)); self:SetCursorPosition(0); end);
+	box:SetScript("OnEscapePressed", function(self) self:SetText(getConfigFunc(self.owner)); self:ClearFocus(); end);
+	box:SetScript("OnEnterPressed", function(self) local val = self:GetNumber(); setConfigFunc(self.owner, val); self:ClearFocus(); end);
+
+	return box;
+end
+
 function TRB_Module:_OnOkay()
 
 	-- Scale
@@ -394,12 +450,7 @@ function TRB_Module:_OnCancel()
 end
 
 function TRB_Module:_OnDefault()
-
-	--TRB_Config[self.name] = {};
-	--TRB_Config[self.name] = TRB_Config_Defaults[self.name];
-	--self:LoadConfig(true);
 	self:ResetConfig();
-
 
 	-- Load default value
 	local v = true;
@@ -417,4 +468,20 @@ function TRB_Module:_OnDefault()
 	else
 		self:Disable();
 	end
+end
+
+function TRB_Module:Config_GetBorderSize()
+	return TRB_Config[self.name].BorderSize or TRB_Config_Defaults[self.name].BorderSize;
+end
+
+function TRB_Module:Config_SetBorderSize(val)
+	TRB_Config[self.name].BorderSize = val;
+end
+
+function TRB_Module:Config_GetBarSize()
+	return TRB_Config[self.name].BarSize or TRB_Config_Defaults[self.name].BarSize;
+end
+
+function TRB_Module:Config_SetBarSize(width, height)
+	TRB_Config[self.name].BarSize = { width, height };
 end
