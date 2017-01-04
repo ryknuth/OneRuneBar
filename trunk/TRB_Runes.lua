@@ -506,7 +506,7 @@ function TRB_Runes:GetConfigColor(module)
 end
 
 function TRB_Runes:SetBarColor(module, name, r, g, b)
-	module.panel.barcolor[name]:SetTexture(r, g, b);
+	module.panel.barcolor[name]:SetColorTexture(r, g, b);
 
 	local newColor = {r, g, b, 1};
 

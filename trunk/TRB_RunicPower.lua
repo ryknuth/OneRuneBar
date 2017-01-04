@@ -221,7 +221,7 @@ function TRB_RunicPower:GetConfigColor(module, name)
 end
 
 function TRB_RunicPower:SetBarColor(module, name, r, g, b)
-	module.panel.barcolor[name]:SetTexture(r, g, b);
+	module.panel.barcolor[name]:SetColorTexture(r, g, b);
 
 	TRB_Config[module.name].Colors = { r, g, b, 1 };
 end
