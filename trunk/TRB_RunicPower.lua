@@ -30,7 +30,7 @@ function TRB_RunicPower:CreateFrame()
 	f.owner = self;
 	self.frame = f;
 
-	self:CreateBorder(self.frame, borderSize);
+	self:CreateBorder(self.frame);
 	
 	self:CreateMoveFrame();
 
