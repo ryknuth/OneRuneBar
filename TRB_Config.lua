@@ -20,6 +20,7 @@ TRB_Config_Defaults = {
 		["Position"] = { "CENTER", nil, "CENTER", 160, -13, },
 		["BarSize"] = { 98, 10 },
 		["BorderSize"] = 1,
+		["IconSize"] = 18,
 	},
 
 	["RunicPower"] = {

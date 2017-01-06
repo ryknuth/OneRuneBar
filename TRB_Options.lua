@@ -34,7 +34,7 @@ function TRB_Options:init()
 	panel.header = header;
 	
 	-- OOC Alpha
-	local OOCSlider = CreateFrame("slider", "TRB_ScaleSlider", panel, "OptionsSliderTemplate");
+	local OOCSlider = CreateFrame("slider", "TRB_OOCSlider", panel, "OptionsSliderTemplate");
 	OOCSlider:SetPoint("TOPLEFT", panel, "TOPLEFT", xoff, yoff-50);
 	OOCSlider:SetWidth(200);
 	OOCSlider:SetHeight(20);
@@ -130,13 +130,6 @@ function TRB_Options:Default()
 			m:_OnDefault();
 		end
 	end
-end
-
-function TRB_Options:SetScaleValue(slider, value)
-	slider.Text:SetText(format("Set Scale: %.1f", value) );
-
-	-- Update scale to get a preview of how big the frames is.
-	ThreeRuneBars:ChangeScale(value);	
 end
 
 function TRB_Options:SetOOCAlphaValue(slider, value)

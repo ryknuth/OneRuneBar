@@ -101,14 +101,6 @@ function ThreeRuneBars:RegisterModule(m)
 	end
 end
 
-function ThreeRuneBars:ChangeScale(value)
-	for name, m in pairs(self.modules) do
-		if (m.SetScale) then
-			m:SetScale(value);
-		end
-	end
-end
-
 function ThreeRuneBars:StartModules()
 	for name, m in pairs(self.modules) do
 		if( not (TRB_Config.disabled_modules and TRB_Config.disabled_modules[name] and TRB_Config.disabled_modules[name] == true) ) then

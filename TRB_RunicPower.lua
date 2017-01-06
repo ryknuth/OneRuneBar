@@ -20,41 +20,50 @@ function TRB_RunicPower:getDefault(val)
 	return nil;
 end
 
-function TRB_RunicPower:OnEnable()
+function TRB_RunicPower:CreateFrame()
+	local f = CreateFrame("frame", nil, UIParent);
+
+	-- Set Position and size
+	f:ClearAllPoints();
+	f:SetPoint("CENTER", UIParent, "CENTER", 0, 0);
+	f:Show();
+	f.owner = self;
+	self.frame = f;
+
+	self:CreateBorder(self.frame, borderSize);
+	
+	self:CreateMoveFrame();
+
+	-- Runic Power
+	local rp = self:CreateBar("TRB_RunicPower", self.frame);
+	rp:SetValue( UnitPower("player") );
+	rp:SetMinMaxValues( 0, UnitPowerMax("player", 6) );
+	rp:SetStatusBarColor( unpack(TRB_Config[self.name].Colors) );
+	
+	-- Text for Runic Power
+	rp.text:SetText(UnitPower("player") or 0);
+	self.Bar = rp;
+end
+
+function TRB_RunicPower:PositionFrame()
 	local borderSize = self:Config_GetBorderSize();
 	local barSize = self:Config_GetBarSize();
 
+	self.frame:SetWidth(barSize[1] + 2 * borderSize);
+	self.frame:SetHeight(barSize[2] + 2 * borderSize);
+
+	self.Bar:SetPoint("TOPLEFT", self.frame, "TOPLEFT", borderSize, -(borderSize));
+	self.Bar:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -(borderSize), borderSize);
+
+	self:UpdateBorderSizes( self.frame );
+end
+
+function TRB_RunicPower:OnEnable()
 	if( not self.frame ) then
-		local f = CreateFrame("frame", nil, UIParent);
-	
-		-- Set Position and size
-		f:ClearAllPoints();
-		f:SetWidth(barSize[1] + 2 * borderSize);
-		f:SetHeight(barSize[2] + 2 * borderSize);
-		f:SetPoint("CENTER", UIParent, "CENTER", 0, 0);
-		f:Show();
-		f.owner = self;
-		self.frame = f;
-
-		self:CreateBorder(self.frame, borderSize);
-		
-		self:CreateMoveFrame();
+		self:CreateFrame();
 	end
 
-	if( not self.Bar ) then
-	
-		-- Runic Power
-		local rp = self:CreateBar("TRB_RunicPower", self.frame);
-		rp:SetPoint("TOPLEFT", self.frame, "TOPLEFT", borderSize, -(borderSize));
-		rp:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", -(borderSize), borderSize);
-		rp:SetValue( UnitPower("player") );
-		rp:SetMinMaxValues( 0, UnitPowerMax("player", 6) );
-		rp:SetStatusBarColor( unpack(TRB_Config[self.name].Colors) );
-		
-		-- Text for Runic Power
-		rp.text:SetText(UnitPower("player") or 0);
-		self.Bar = rp;
-	end
+	self:PositionFrame();
 
 	if(self.cfg.Texture) then
 		self:SetBarTexture(self.cfg.Texture);
