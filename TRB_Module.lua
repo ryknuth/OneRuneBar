@@ -4,11 +4,6 @@ end
 ------------------------------------------------------------------
 -- Local config
 
-local BarSize = {
-	["height"] = 8,
-	["width"] = 48,
-};
-
 local NoTextureText = "(none)";
 
 ------------------------------------------------------------------
@@ -65,11 +60,8 @@ function TRB_Module:init()
 	self:Print((self.name or "Unknown").." module enabled.");
 end
 
-function TRB_Module:CreateTexture(f, w, h)
-	local tex = self.frame:CreateTexture(nil, "BACKGROUND");
-	--tex:SetWidth(w);
-	--tex:SetHeight(h);
-	tex:SetPoint("CENTER", f, "CENTER", 0, 0);
+function TRB_Module:CreateTexture(f)
+	local tex = f:CreateTexture(nil, "BACKGROUND");
 	return tex;
 end
 
@@ -79,8 +71,6 @@ function TRB_Module:CreateBar(name, parent)
 	Bar:GetStatusBarTexture():SetHorizTile(true);
 	Bar:SetMinMaxValues(0, 100);
 	Bar:SetValue(100);
-	Bar:SetWidth(BarSize["width"]);
-	Bar:SetHeight(BarSize["height"]);
 	
 	Bar.bg = Bar:CreateTexture(nil, "BACKGROUND");
 	Bar.bg:SetAllPoints(Bar);
@@ -113,19 +103,19 @@ function TRB_Module:CreateMoveFrame()
 	self.moveFrame = f;
 end
 
-function TRB_Module:CreateBorderTexture(f, from, to, borderSize)
-	local t = self:CreateTexture(f, borderSize, borderSize);
+function TRB_Module:CreateBorderTexture(f, from, to)
+	local t = self:CreateTexture(f);
 	t:SetPoint(from, f, to, 0, 0);
 	t:SetPoint(to, f, from, 0, 0);
 	t:SetColorTexture( 0.0, 0.0, 0.0 );
 	return t;
 end
 
-function TRB_Module:CreateBorder(f, borderSize)
-	f.t = self:CreateBorderTexture( f, "TOPLEFT", "TOPRIGHT", borderSize );
-	f.b = self:CreateBorderTexture( f, "BOTTOMLEFT", "BOTTOMRIGHT", borderSize );
-	f.l = self:CreateBorderTexture( f, "TOPLEFT", "BOTTOMLEFT", borderSize );
-	f.r = self:CreateBorderTexture( f, "TOPRIGHT", "BOTTOMRIGHT", borderSize );
+function TRB_Module:CreateBorder(f)
+	f.t = self:CreateBorderTexture( f, "TOPLEFT", "TOPRIGHT" );
+	f.b = self:CreateBorderTexture( f, "BOTTOMLEFT", "BOTTOMRIGHT" );
+	f.l = self:CreateBorderTexture( f, "TOPLEFT", "BOTTOMLEFT" );
+	f.r = self:CreateBorderTexture( f, "TOPRIGHT", "BOTTOMRIGHT" );
 end
 
 function TRB_Module:UpdateBorderSizes( f )
@@ -179,17 +169,6 @@ end
 
 function TRB_Module:LoadPosition()
 	if( not self.frame ) then return; end -- if no frame exists no position exists.
---[[	
--- This should never happen. TRB_Config should exist here.
-	if( not TRB_Config[self.name] ) then TRB_Config[self.name] = TRB_Config_Defaults[self.name]; end
-	
--- Module should always have a position	
-	if( not TRB_Config[self.name].Position ) then
-		local pos = TRB_Config_Defaults[self.name].Position;
-		TRB_Config[self.name].Position = pos;
-	end
---]]	
---	self.frame:SetPoint( unpack(TRB_Config[self.name].Position) );
 
 	if( self.cfg and self.cfg.Position ) then
 		self.frame:SetPoint( unpack(self.cfg.Position) );

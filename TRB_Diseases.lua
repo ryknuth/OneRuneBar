@@ -37,7 +37,10 @@ function TRB_Diseases:CreateFrame()
 	f.owner = self;
 	self.frame = f;
 
-	self.DiseaseBarContainer = self:CreateBarContainer();
+	self.DiseaseBarContainer = CreateFrame("frame", nil, self.frame)
+	self.DiseaseBarContainer:Show();
+
+	self:CreateBorder(self.DiseaseBarContainer);
 
 	-- Create Icons
 	local icon = self.frame:CreateTexture(nil, "OVERLAY");
@@ -174,15 +177,6 @@ function TRB_Diseases:OnUpdate(elapsed)
 
 		self.last = 0;
 	end
-end
-
-function TRB_Diseases:CreateBarContainer()
-	local f = CreateFrame("frame", nil, self.frame)
-	f:Show();
-
-	self:CreateBorder(f, self:Config_GetBorderSize());
-
-	return f;
 end
 
 function TRB_Diseases:SetBarTexture(texture)

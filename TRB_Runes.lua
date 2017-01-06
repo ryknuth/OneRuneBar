@@ -44,8 +44,7 @@ function TRB_Runes:CreateFrame()
 	self.frame = frame;
 	frame:Show();
 
-	-- Create Border around our runebar
-	self.Bar = self:CreateBarContainer();
+	self:CreateBorder( frame );
 
 	-- Create a moveframe so user can unlock and move the rune bars
 	self:CreateMoveFrame();
@@ -65,7 +64,7 @@ function TRB_Runes:PositionFrame()
 	self.frame:SetHeight( barSize[2] + 2 * borderSize );
 
 	self:PositionRunes();
-	self:UpdateBorderSizes( self.Bar );
+	self:UpdateBorderSizes( self.frame );
 end
 
 function TRB_Runes:OnEnable()
@@ -225,23 +224,6 @@ function TRB_Runes:OnUpdate(elapsed)
 
 		self.last = 0;
 	end
-end
-
---
--- CreateBarContainer
--- Create a holder frame for the bar
---
-function TRB_Runes:CreateBarContainer()
-	local f = CreateFrame("frame", nil, self.frame);
-	f:SetPoint("TOPLEFT", self.frame, "TOPLEFT", 0, 0 );
-	f:SetPoint("BOTTOMRIGHT", self.frame, "BOTTOMRIGHT", 0, 0 );
-
-	-- Set position
-	f:Show();
-
-	self:CreateBorder( f, self:Config_GetBorderSize() );
-
-	return f;
 end
 
 
