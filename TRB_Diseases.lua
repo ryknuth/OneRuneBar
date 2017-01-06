@@ -195,6 +195,15 @@ function TRB_Diseases:OnInitOptions(panel)
 	self:CreateColorButtonOption(panel, "FFever", 420, -80);
 	self:CreateColorButtonOption(panel, "BPlague", 420, -110);
 	self:CreateColorButtonOption(panel, "VPlague", 420, -140);
+
+	local iconSizeLabel = self:CreateLabel( panel, "Icon Size:");
+	iconSizeLabel:SetPoint("TOPLEFT", panel, "TOPLEFT", 20, -220);
+	
+	local barHeightBox = self:CreateEditBox( panel, "TRB_IconSizeEditBox"..self.name,
+		function(self) return self:Config_GetIconSize(); end,
+		function(self, value) self:Config_SetIconSize(value); end );
+	barHeightBox:SetPoint("TOPLEFT", iconSizeLabel, "TOPRIGHT", 4, 0);
+	barHeightBox:SetPoint("BOTTOMLEFT", iconSizeLabel, "BOTTOMRIGHT", 0, 0);
 end
 
 function TRB_Diseases:GetConfigColor(module, name)
