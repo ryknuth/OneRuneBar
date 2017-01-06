@@ -15,14 +15,20 @@ function TRB_Runes:OnDisable()
 end
 
 function TRB_Runes:CreateRunes()
+	for num=1, 6 do
+		local bar = self:CreateBar( "TRB_Rune"..num, self.frame);
+		self.Runes[num] = bar;
+	end
+end
+
+function TRB_Runes:PositionRunes()
 	local borderSize = self:Config_GetBorderSize();
 	local barSize = self:Config_GetBarSize();
 
 	for num=1, 6 do
-		local bar = self:CreateBar( "TRB_Rune"..num, self.frame);
+		local bar = self.Runes[num];
 		bar:SetWidth( barSize[1] );
 		bar:SetHeight( barSize[2] );
-		self.Runes[num] = bar;
 		if( num == 1 ) then
 			bar:SetPoint("TOPLEFT", self.frame, "TOPLEFT", borderSize, -(borderSize));
 		else
@@ -31,34 +37,43 @@ function TRB_Runes:CreateRunes()
 	end
 end
 
-function TRB_Runes:OnEnable()
+function TRB_Runes:CreateFrame()
+	local frame = CreateFrame("frame", nil, UIParent);
+
+	frame.owner = self;
+	self.frame = frame;
+	frame:Show();
+
+	-- Create Border around our runebar
+	self.Bar = self:CreateBarContainer();
+
+	-- Create a moveframe so user can unlock and move the rune bars
+	self:CreateMoveFrame();
+
+	-- Create the runebars
+	self.Runes = {};
+
+	self:CreateRunes();
+	self:UpdateColor();
+end
+
+function TRB_Runes:PositionFrame()
 	local borderSize = self:Config_GetBorderSize();
 	local barSize = self:Config_GetBarSize();
 
+	self.frame:SetWidth( 6 * barSize[1] + 7 * borderSize );
+	self.frame:SetHeight( barSize[2] + 2 * borderSize );
+
+	self:PositionRunes();
+	self:UpdateBorderSizes( self.Bar );
+end
+
+function TRB_Runes:OnEnable()
 	if( not self.frame ) then
-		local frame = CreateFrame("frame", nil, UIParent);
-
-		-- Set position
-		frame:SetWidth( 6 * barSize[1] + 7 * borderSize );
-		frame:SetHeight( barSize[2] + 2 * borderSize );
-		frame.owner = self;
-		self.frame = frame;
-		frame:Show();
-
-		-- Create Border around our runebar
-		self.Bar = self:CreateBarContainer();
-
-		-- Create a moveframe so user can unlock and move the rune bars
-		self:CreateMoveFrame();
+		self:CreateFrame();
 	end
 
-	if( not self.Runes ) then
-		-- Create the runebars
-		self.Runes = {};
-
-		self:CreateRunes();
-		self:UpdateColor()
-	end
+	self:PositionFrame();
 
 	if(self.cfg.Texture) then
 		self:SetBarTexture(self.cfg.Texture);
