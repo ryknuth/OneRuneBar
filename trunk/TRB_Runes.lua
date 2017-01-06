@@ -18,6 +18,10 @@ function TRB_Runes:CreateRunes()
 	for num=1, 6 do
 		local bar = self:CreateBar( "TRB_Rune"..num, self.frame);
 		self.Runes[num] = bar;
+
+		if( num ~= 1 ) then
+			self:CreateMiddleLine(self.Runes[num - 1], self.Runes[num] );
+		end
 	end
 end
 
@@ -35,6 +39,14 @@ function TRB_Runes:PositionRunes()
 			bar:SetPoint("TOPLEFT", self.Runes[num - 1], "TOPRIGHT", borderSize, 0);
 		end
 	end
+end
+
+function TRB_Runes:CreateMiddleLine(bar1, bar2)
+	local t = self:CreateTexture(self.frame);
+	t:SetColorTexture( 0.0, 0.0, 0.0 );
+	t:SetPoint("TOPLEFT", bar1, "TOPRIGHT", 0, 0 );
+	t:SetPoint( "BOTTOMRIGHT", bar2, "BOTTOMLEFT", 0, 0 );
+	return t;
 end
 
 function TRB_Runes:CreateFrame()
