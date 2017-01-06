@@ -61,19 +61,14 @@ function TRB_Module:init()
 	-- Now we are ready to enable this module
 	if( self.OnEnable ) then self:OnEnable(); end
 	
-	-- Update scale ( this is also done in ThreeRuneBars:ADDON_LOADED, Need only one?)
-	if( self.frame and self.cfg.Scale ) then
-		self.frame:SetScale( self.cfg.Scale );
-	end
-	
 	self.isRunning = true;
 	self:Print((self.name or "Unknown").." module enabled.");
 end
 
 function TRB_Module:CreateTexture(f, w, h)
-	local tex = f:CreateTexture(nil, "BACKGROUND");
-	tex:SetWidth(w);
-	tex:SetHeight(h);
+	local tex = self.frame:CreateTexture(nil, "BACKGROUND");
+	--tex:SetWidth(w);
+	--tex:SetHeight(h);
 	tex:SetPoint("CENTER", f, "CENTER", 0, 0);
 	return tex;
 end
@@ -131,6 +126,15 @@ function TRB_Module:CreateBorder(f, borderSize)
 	f.b = self:CreateBorderTexture( f, "BOTTOMLEFT", "BOTTOMRIGHT", borderSize );
 	f.l = self:CreateBorderTexture( f, "TOPLEFT", "BOTTOMLEFT", borderSize );
 	f.r = self:CreateBorderTexture( f, "TOPRIGHT", "BOTTOMRIGHT", borderSize );
+end
+
+function TRB_Module:UpdateBorderSizes( f )
+	local borderSize = self:Config_GetBorderSize();
+
+	f.t:SetHeight( borderSize );
+	f.b:SetHeight( borderSize );
+	f.l:SetWidth( borderSize );
+	f.r:SetWidth( borderSize );
 end
 
 function TRB_Module:Disable()
@@ -252,29 +256,10 @@ function TRB_Module:InitOptions(parent)
 	end
 	cb:SetChecked( v );
 	self.CB_Disabled = cb;
-	
-	-- Scale
-	local slider = CreateFrame("slider", "TRB_ModuleScaleSlider_"..self.name, panel, "OptionsSliderTemplate");
-	slider:SetPoint("TOPLEFT", cb, "BOTTOMLEFT", 0, yoff);
-	slider:SetWidth(200);
-	slider:SetHeight(20);
-	slider:SetOrientation("HORIZONTAL");
-	slider:SetMinMaxValues(0.1, 2.0);
-	slider:SetValue(1);
-	slider:SetValueStep(0.1);
-	_G[slider:GetName().."Low"]:SetText("0.1");
-	_G[slider:GetName().."High"]:SetText("2.0");
-	slider.Text = _G[slider:GetName().."Text"];
-	slider.owner = self;
-	slider:SetScript("OnValueChanged", function(self, value) self.Text:SetText(format("Set Scale: %.1f", value) ); self.owner.frame:SetScale(value); end);
-	slider:SetScript("OnShow", function(self) self:SetValue(TRB_Config[self.owner.name].Scale or TRB_Config_Defaults[self.owner.name].Scale or 1.0); end);
-	slider.Text:SetText( format("Set Scale: %.1f", slider:GetValue()) );
-	slider:Show();
-	self.ScaleSlider = slider;
 
 	-- Texture options
 	local textureText = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight");
-	textureText:SetPoint("TOPLEFT", slider, "TOPRIGHT", xoff, 15);
+	textureText:SetPoint("TOPLEFT", cb, "BOTTOMLEFT", 0, yoff);
 	textureText:SetText("Texture");
 
 	local textureDD = CreateFrame("frame", "TRB_ModuleTextureDD_"..self.name, panel, "UIDropDownMenuTemplate");
@@ -325,7 +310,7 @@ function TRB_Module:InitOptions(parent)
 	UIDropDownMenu_JustifyText(textureDD, "LEFT");
 
 	local borderSizeLabel = self:CreateLabel( panel, "Border Size:");
-	borderSizeLabel:SetPoint("TOPLEFT", slider, "BOTTOMLEFT", 0, yoff);
+	borderSizeLabel:SetPoint("TOPLEFT", textureDD, "BOTTOMLEFT", 20, yoff);
 	
 	local borderSizeBox = self:CreateEditBox( panel, "TRB_ModuleBorderSizeEditBox_"..self.name,
 		function(self) return self:Config_GetBorderSize(); end,
@@ -338,7 +323,7 @@ function TRB_Module:InitOptions(parent)
 	
 	local barWidthBox = self:CreateEditBox( panel, "TRB_ModuleBarWidthEditBox_"..self.name,
 		function(self) return self:Config_GetBarSize()[1]; end,
-		function(self, value) self:Config_SetBorderSize(value, self:Config_GetBarSize()[2]); end );
+		function(self, value) self:Config_SetBarSize(value, self:Config_GetBarSize()[2]); end );
 	barWidthBox:SetPoint("TOPLEFT", barWidthLabel, "TOPRIGHT", 4, 0);
 	barWidthBox:SetPoint("BOTTOMLEFT", barWidthLabel, "BOTTOMRIGHT", 0, 0);
 
@@ -347,7 +332,7 @@ function TRB_Module:InitOptions(parent)
 	
 	local barHeightBox = self:CreateEditBox( panel, "TRB_ModuleBarHeightEditBox_"..self.name,
 		function(self) return self:Config_GetBarSize()[2]; end,
-		function(self, value) self:Config_SetBorderSize(self:Config_GetBarSize()[1], value); end );
+		function(self, value) self:Config_SetBarSize(self:Config_GetBarSize()[1], value); end );
 	barHeightBox:SetPoint("TOPLEFT", barHeightLabel, "TOPRIGHT", 4, 0);
 	barHeightBox:SetPoint("BOTTOMLEFT", barHeightLabel, "BOTTOMRIGHT", 0, 0);
 
@@ -414,14 +399,6 @@ function TRB_Module:CreateEditBox( panel, name, getConfigFunc, setConfigFunc )
 end
 
 function TRB_Module:_OnOkay()
-
-	-- Scale
-		local scale = self.ScaleSlider:GetValue();
-		if( not TRB_Config.Scale or TRB_Config.Scale ~= scale ) then
-			--DEFAULT_CHAT_FRAME:AddMessage( format("TRB: New scale value saved: %.1f",scale) );
-			TRB_Config[self.name].Scale = scale;
-		end
-	
 	-- Disable/Enable
 	local status = self.CB_Disabled:GetChecked();
 	if( status and not self.isRunning ) then
@@ -441,9 +418,6 @@ function TRB_Module:_OnOkay()
 end
 
 function TRB_Module:_OnCancel()
-	-- Reset Scale
-	self:SetScale(TRB_Config[self.name].Scale or 1.0);
-	
 	if( self.OnCancel ) then
 		self:OnCancel();
 	end
@@ -476,6 +450,10 @@ end
 
 function TRB_Module:Config_SetBorderSize(val)
 	TRB_Config[self.name].BorderSize = val;
+
+	if( self.PositionFrame ) then
+		self:PositionFrame();
+	end
 end
 
 function TRB_Module:Config_GetBarSize()
@@ -484,4 +462,8 @@ end
 
 function TRB_Module:Config_SetBarSize(width, height)
 	TRB_Config[self.name].BarSize = { width, height };
+
+	if( self.PositionFrame ) then
+		self:PositionFrame();
+	end
 end

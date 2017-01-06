@@ -7,7 +7,7 @@ local FF_Icon = "Interface\\Icons\\Spell_DeathKnight_FrostFever";
 local BP_Icon = "Interface\\Icons\\Spell_DeathKnight_BloodPlague";
 local VP_Icon = "Interface\\Icons\\ability_creature_disease_02";
 
-local IconSize = 18;
+local IconGap = 2;
 
 ------------------------------------------------------------------------
 
@@ -28,46 +28,60 @@ function TRB_Diseases:getDefault(val)
 	return nil;
 end
 
-function TRB_Diseases:OnEnable()
+function TRB_Diseases:CreateFrame()
+	local f = CreateFrame("frame", nil, UIParent);
+
+	-- Set Position and size
+	f:ClearAllPoints();
+	f:SetPoint("CENTER", UIParent, "CENTER", 0, 0);
+	f.owner = self;
+	self.frame = f;
+
+	self.DiseaseBarContainer = self:CreateBarContainer();
+
+	-- Create Icons
+	local icon = self.frame:CreateTexture(nil, "OVERLAY");
+	icon:ClearAllPoints();
+	self.icon = icon;
+
+	self:CreateMoveFrame();
+
+	local bar = self:CreateBar("Disease_Bar", self.frame);
+	bar:SetValue(0);
+	bar:Show();
+	self.DiseaseBar = bar;
+end
+
+function TRB_Diseases:PositionFrame()
 	local borderSize = self:Config_GetBorderSize();
 	local barSize = self:Config_GetBarSize();
-	
+	local iconSize = self:Config_GetIconSize();
+
+	self.frame:SetWidth(barSize[1] + 2 * borderSize + IconGap + iconSize );
+	self.frame:SetHeight(iconSize);
+
+	self.DiseaseBarContainer:SetHeight(barSize[2] + 2 * borderSize );
+	self.DiseaseBarContainer:SetPoint("CENTER", self.frame, "CENTER", 0, 0);
+	self.DiseaseBarContainer:SetPoint("LEFT", self.frame, "LEFT", IconGap + iconSize, 0 );
+	self.DiseaseBarContainer:SetPoint("RIGHT", self.frame, "RIGHT", 0, 0);
+
+	self.icon:SetPoint("TOP", self.frame, "TOP", 0, 0);
+	self.icon:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0);
+	self.icon:SetPoint("LEFT", self.frame, "LEFT", 0, 0);
+	self.icon:SetPoint("RIGHT", self.frame, "LEFT", iconSize, 0);
+
+	self.DiseaseBar:SetPoint("TOPLEFT", self.DiseaseBarContainer, "TOPLEFT", borderSize, -(borderSize));
+	self.DiseaseBar:SetPoint("BOTTOMRIGHT", self.DiseaseBarContainer, "BOTTOMRIGHT", -(borderSize), borderSize);
+
+	self:UpdateBorderSizes( self.DiseaseBarContainer );
+end
+
+function TRB_Diseases:OnEnable()
 	if( not self.frame ) then
-		local f = CreateFrame("frame", nil, UIParent);
-	
-		-- Set Position and size
-		f:ClearAllPoints();
-		f:SetWidth(self:Config_GetBarSize()[1] + 30);
-		f:SetHeight(12);
-		f:SetPoint("CENTER", UIParent, "CENTER", 0, 0);
-		f:SetFrameStrata("HIGH"); -- Set to HIGH framestrata to be visible ontop of Blizzards "Power Aura" thing
-		f.owner = self;
-		self.frame = f;
-
-		self.DiseaseBarContainer = self:CreateBarContainer(barSize[1], barSize[2]);
-		self.DiseaseBarContainer:SetPoint("TOPLEFT", f, "BOTTOMLEFT", IconSize + 2, -4);
-
-		-- Create Icons
-		local icon;
-		icon = self.DiseaseBarContainer:CreateTexture(nil, "OVERLAY");
-		icon:ClearAllPoints();
-		icon:SetPoint("RIGHT", self.DiseaseBarContainer, "LEFT", -2, 0);
-		icon:SetWidth(IconSize);
-		icon:SetHeight(IconSize);
-		self.DiseaseBarContainer.icon = icon;
-
-		self:CreateMoveFrame();
+		self:CreateFrame();
 	end
 
-	if( not self.DiseaseBar ) then
-
-		local bar = self:CreateBar("Disease_Bar", self.frame);
-		bar:SetValue(0);
-		bar:Show();
-		bar:SetPoint("TOPLEFT", self.DiseaseBarContainer, "TOPLEFT", borderSize, -(borderSize));
-		bar:SetPoint("BOTTOMRIGHT", self.DiseaseBarContainer, "BOTTOMRIGHT", -(borderSize), borderSize);
-		self.DiseaseBar = bar;
-	end
+	self:PositionFrame();
 
 	if(self.cfg.Texture) then
 		self:SetBarTexture(self.cfg.Texture);
@@ -94,15 +108,15 @@ function TRB_Diseases:UpdateDiseaseNameAndIcon()
 	local specId = GetSpecialization();
 	if( not specId ) then return; end
 	if ( specId == 1 ) then
-		self.DiseaseBarContainer.icon:SetTexture(BP_Icon);
+		self.icon:SetTexture(BP_Icon);
 		self.DiseaseBar.id = "Blood Plague";
 		self.DiseaseBar:SetStatusBarColor( TRB_Config[self.name].Colors["bp"][1], TRB_Config[self.name].Colors["bp"][2], TRB_Config[self.name].Colors["bp"][3] );
 	elseif( specId == 2 ) then
-		self.DiseaseBarContainer.icon:SetTexture(FF_Icon);
+		self.icon:SetTexture(FF_Icon);
 		self.DiseaseBar.id = "Frost Fever";
 		self.DiseaseBar:SetStatusBarColor( TRB_Config[self.name].Colors["ff"][1], TRB_Config[self.name].Colors["ff"][2], TRB_Config[self.name].Colors["ff"][3] );
 	else
-		self.DiseaseBarContainer.icon:SetTexture(VP_Icon);
+		self.icon:SetTexture(VP_Icon);
 		self.DiseaseBar.id = "Virulent Plague";
 		self.DiseaseBar:SetStatusBarColor( TRB_Config[self.name].Colors["vp"][1], TRB_Config[self.name].Colors["vp"][2], TRB_Config[self.name].Colors["vp"][3] );
 	end
@@ -162,17 +176,11 @@ function TRB_Diseases:OnUpdate(elapsed)
 	end
 end
 
--- Create a holder frame for each bar (this is not the statusbars, just the background)
-function TRB_Diseases:CreateBarContainer(w, h)
-	local borderSize = self:Config_GetBorderSize();
-
+function TRB_Diseases:CreateBarContainer()
 	local f = CreateFrame("frame", nil, self.frame)
-	-- Set position
-	f:SetWidth(w + 2 * borderSize);
-	f:SetHeight(h + 2 * borderSize);
 	f:Show();
 
-	self:CreateBorder(f, borderSize);
+	self:CreateBorder(f, self:Config_GetBorderSize());
 
 	return f;
 end
@@ -226,4 +234,14 @@ function TRB_Diseases:SetBarColor(module, name, r, g, b)
 	elseif( name == "VPlague" ) then
 		TRB_Config[module.name].Colors["np"] = newColor;
 	end
+end
+
+function TRB_Module:Config_GetIconSize()
+	return TRB_Config[self.name].IconSize or TRB_Config_Defaults[self.name].IconSize;
+end
+
+function TRB_Module:Config_SetIconSize(val)
+	TRB_Config[self.name].IconSize = val;
+
+	self:PositionFrame();
 end
