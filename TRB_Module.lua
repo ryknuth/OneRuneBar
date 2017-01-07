@@ -20,16 +20,6 @@ function TRB_Module:ChangeStrata(strata)
 end
 
 --
--- Change Alpha level for in/out of combat
---
-function TRB_Module:OnOutOfCombatFade(alpha)
-	if not alpha then return; end
-	if( self.frame ) then
-		self.frame:SetAlpha(alpha);
-	end
-end
-
---
 -- Create a module.
 -- Use:
 -- local myModule = TRB_Module:create("SomeName");
@@ -214,7 +204,6 @@ function TRB_Module:InitOptions(parent)
 	panel.parent = parent.name;
 	panel.owner = self;
 	panel.okay = function(self) self.owner._OnOkay(self.owner); end
-	panel.cancel = function(self) self.owner._OnCancel(self.owner); end
 	panel.default = function(self) self.owner._OnDefault(self.owner); end
 	--
 	-- Module panel
@@ -400,17 +389,6 @@ function TRB_Module:_OnOkay()
 		--self:Print(self.name.." module deactivated.");
 		if( not TRB_Config.disabled_modules ) then TRB_Config.disabled_modules = {}; end
 		TRB_Config.disabled_modules[self.name] = true;
-	end
-	
-	if( self.OnOkay ) then
-		self:OnOkay();
-	end
-
-end
-
-function TRB_Module:_OnCancel()
-	if( self.OnCancel ) then
-		self:OnCancel();
 	end
 end
 

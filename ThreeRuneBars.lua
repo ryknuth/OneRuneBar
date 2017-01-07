@@ -14,18 +14,16 @@ if( LibStub and LibStub.GetLibrary ) then
 	SM = LibStub:GetLibrary("LibSharedMedia-3.0");
 end
 
-function ThreeRuneBars:UpdateCombatFading(value)
+function ThreeRuneBars:UpdateCombatFading()
+	local value = self:Config_GetOOCAlpha();
 
-	-- Choose value if value exists else use OOC_Alpha from Config or OOC_Alpha from Default config.
-	local v = value or (TRB_Config.OOC_Alpha or TRB_Config_Defaults.OOC_Alpha); 
-	
 	-- In combat it should be fully visible
-	if( self.inCombat ) then v = 1.0; end
-	
+	if( self.inCombat ) then value = 1.0; end
+
 	-- Update alpha value for modules
 	for name, m in pairs(self.modules) do
 		if( m.frame ) then
-			m.frame:SetAlpha( v );
+			m.frame:SetAlpha( value );
 		end
 	end
 end
@@ -34,7 +32,7 @@ function ThreeRuneBars:PLAYER_REGEN_ENABLED()
 	-- out of combat
 	self.inCombat = nil;
 
-	self:UpdateCombatFading(TRB_Config.OOC_Alpha);
+	self:UpdateCombatFading();
 	
 	-- Reduce frame strata no need to be above blizzards 'Power Aura' when we are out of combat
 	-- Prevent our runebars to get above bags or other frames.
@@ -47,7 +45,7 @@ function ThreeRuneBars:PLAYER_REGEN_DISABLED()
 	-- in combat
 	self.inCombat = true;
 	
-	self:UpdateCombatFading(1.0);
+	self:UpdateCombatFading();
 	
 	-- Increase frame strata so it will get above blizzards 'Power Aura'
 	for _, m in pairs(self.modules) do
@@ -139,4 +137,14 @@ function ThreeRuneBars:ADDON_LOADED(addon)
 		-- Update OOC and FrameStrata state
 		self:PLAYER_REGEN_ENABLED();
 	end
+end
+
+function ThreeRuneBars:Config_GetOOCAlpha()
+	return TRB_Config.OOC_Alpha or TRB_Config_Defaults.OOC_Alpha;
+end
+
+function ThreeRuneBars:Config_SetOOCAlpha(val)
+	TRB_Config.OOC_Alpha = val;
+
+	self:UpdateCombatFading();
 end
