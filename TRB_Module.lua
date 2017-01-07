@@ -77,7 +77,9 @@ function TRB_Module:CreateBar(name, parent)
 	Bar.bg:SetColorTexture(0.25, 0.25, 0.25, 0.5);
 	
 	-- Create text on bar
-	local text = Bar:CreateFontString(nil, "ARTWORK", "GameFontHighlightExtraSmall");
+	local text = Bar:CreateFontString(nil, "ARTWORK", "GameFontHighlight");
+	--text:SetFont(ElvUI[1]["media"].normFont, 12, "" );
+	text:SetFont("Fonts\\FRIZQT__.TTF", self:Config_GetFontSize(), "");
 	text:SetPoint("CENTER", Bar, "CENTER", 0, 0);
 	Bar.text = text;
 
@@ -315,7 +317,16 @@ function TRB_Module:InitOptions(parent)
 	barHeightBox:SetPoint("TOPLEFT", barHeightLabel, "TOPRIGHT", 4, 0);
 	barHeightBox:SetPoint("BOTTOMLEFT", barHeightLabel, "BOTTOMRIGHT", 0, 0);
 
-	if( self.OnInitOptions ) then self:OnInitOptions(panel); end
+	local fontSizeLabel = self:CreateLabel( panel, "Font Size:");
+	fontSizeLabel:SetPoint("TOPLEFT", barWidthLabel, "BOTTOMLEFT", 0, yoff);
+	
+	local fontSizeBox = self:CreateEditBox( panel, "TRB_ModuleBarFontSizeEditBox_"..self.name,
+		function(self) return self:Config_GetFontSize(); end,
+		function(self, value) self:Config_SetFontSize(value); end );
+	fontSizeBox:SetPoint("TOPLEFT", fontSizeLabel, "TOPRIGHT", 4, 0);
+	fontSizeBox:SetPoint("BOTTOMLEFT", fontSizeLabel, "BOTTOMRIGHT", 0, 0);
+
+	if( self.OnInitOptions ) then self:OnInitOptions(panel, fontSizeLabel ); end
 	
 	--
 	-- Add panel to blizzards addon config
@@ -324,11 +335,10 @@ function TRB_Module:InitOptions(parent)
 	InterfaceOptions_AddCategory(self.panel);
 end
 
-function TRB_Module:CreateColorButtonOption(panel, name, x, y)
+function TRB_Module:CreateColorButtonOption(panel, name)
 	local btn = CreateFrame("button", self.name..name.."button", panel, "UIPanelButtonTemplate");
 	btn.owner = self;
 	btn.trbcolorname = name;
-	btn:SetPoint("TOPLEFT", panel, "TOPLEFT", x, y);
 	btn:SetWidth(80);
 	btn:SetHeight(22);
 	btn:SetText(name);
@@ -353,6 +363,8 @@ function TRB_Module:CreateColorButtonOption(panel, name, x, y)
 	end
 
 	panel.barcolor[name] = tex;
+
+	return btn, tex;
 end
 
 function TRB_Module:CreateLabel( panel, labelText )
@@ -445,4 +457,13 @@ function TRB_Module:Config_SetBarSize(width, height)
 	if( self.PositionFrame ) then
 		self:PositionFrame();
 	end
+end
+
+function TRB_Module:Config_GetFontSize()
+	return TRB_Config[self.name].FontSize or TRB_Config_Defaults[self.name].FontSize;
+end
+
+function TRB_Module:Config_SetFontSize(val)
+	TRB_Config[self.name].FontSize = val;
+	self.Bar.text:SetFont("Fonts\\FRIZQT__.TTF", val, "");
 end

@@ -263,12 +263,12 @@ function TRB_Runes:OnOkay()
 	end
 end
 
-function TRB_Runes:OnInitOptions(panel)
+function TRB_Runes:OnInitOptions(panel, bottomObject)
 	--
 	-- Disable Rune cooldown counter text
 	--
 	local cb = CreateFrame("CheckButton", "TRB_Runes_DisableText", panel, "InterfaceOptionsCheckButtonTemplate");
-	cb:SetPoint("TOPLEFT", panel, "TOPLEFT", 20, -200);
+	cb:SetPoint("TOPLEFT", bottomObject, "BOTTOMLEFT", 0, -20);
 	cb.text = _G[cb:GetName().."Text"];
 	cb.text:SetText("Enable "..self.name.." cooldown counter text");
 	local v = true;
@@ -282,7 +282,8 @@ function TRB_Runes:OnInitOptions(panel)
 	--- Color buttons
 	---
 
-	self:CreateColorButtonOption(panel, "Rune Color", 420, -110);
+	local btn, tex = self:CreateColorButtonOption(panel, "Rune Color");
+	btn:SetPoint( "LEFT", self.TextureDD, "RIGHT", 20, 0 );
 end
 
 function TRB_Runes:SetBarTexture(texture)

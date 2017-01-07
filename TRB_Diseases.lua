@@ -191,13 +191,16 @@ function TRB_Diseases:SetBarTexture(texture)
 	self.DiseaseBar:GetStatusBarTexture():SetVertTile(false);
 end
 
-function TRB_Diseases:OnInitOptions(panel)
-	self:CreateColorButtonOption(panel, "FFever", 420, -80);
-	self:CreateColorButtonOption(panel, "BPlague", 420, -110);
-	self:CreateColorButtonOption(panel, "VPlague", 420, -140);
+function TRB_Diseases:OnInitOptions(panel, bottomObject)
+	local btn, tex = self:CreateColorButtonOption(panel, "FFever");
+	btn:SetPoint( "LEFT", self.TextureDD, "RIGHT", 20, 0 );
+	local btn2, tex2 = self:CreateColorButtonOption(panel, "BPlague");
+	btn2:SetPoint( "LEFT", tex, "RIGHT", 20, 0 );
+	local btn3, tex3 = self:CreateColorButtonOption(panel, "VPlague");
+	btn3:SetPoint( "LEFT", tex2, "RIGHT", 20, 0 );
 
 	local iconSizeLabel = self:CreateLabel( panel, "Icon Size:");
-	iconSizeLabel:SetPoint("TOPLEFT", panel, "TOPLEFT", 20, -220);
+	iconSizeLabel:SetPoint("TOPLEFT", bottomObject, "BOTTOMLEFT", 0, -20);
 	
 	local barHeightBox = self:CreateEditBox( panel, "TRB_IconSizeEditBox"..self.name,
 		function(self) return self:Config_GetIconSize(); end,
