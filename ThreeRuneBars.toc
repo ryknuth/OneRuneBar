@@ -1,7 +1,7 @@
 ## Interface: 70100
 ## Title: Three Rune Bars
 ## Author: McZ 
-## Version: 7.1.0
+## Version: 7.1.1
 ## SavedVariables: TRB_Config
 ## Notes: Simple 1 Rune bar display. Combines all 6 runes into one energy like bar.
 ## OptionalDeps: LibSharedMedia-3.0
