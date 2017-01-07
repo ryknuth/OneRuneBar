@@ -20,7 +20,6 @@ function TRB_Options:init()
 	local panel = CreateFrame("frame", "ThreeRuneBars_Options", UIParent);
 	panel.name = "Three Rune Bars";
 	panel.okay = function() TRB_Options:Okay(TRB_Options); end
-	panel.cancel = function() TRB_Options:Cancel(TRB_Options); end
 	panel.default = function() TRB_Options:Default(TRB_Options); end
 
 	--
@@ -46,9 +45,8 @@ function TRB_Options:init()
 	_G[OOCSlider:GetName().."High"]:SetText("1.0");
 	OOCSlider.Text = _G[OOCSlider:GetName().."Text"];
 	OOCSlider:SetScript("OnValueChanged", function(self, value) TRB_Options:SetOOCAlphaValue(self, value); end);
-	OOCSlider:SetScript("OnShow", function(self) self:SetValue(TRB_Config.OOC_Alpha or TRB_Config_Defaults.OOC_Alpha); end);
+	OOCSlider:SetValue(ThreeRuneBars:Config_GetOOCAlpha());
 	OOCSlider.Text:SetText( format("Out of Combat Alpha: %.2f", OOCSlider:GetValue()) );
-	OOCSlider:Show();
 	self.OOCSlider = OOCSlider;
 	
 	--
@@ -79,12 +77,6 @@ function TRB_Options:ResetConfig()
 end
 
 function TRB_Options:Okay()
-
---	DEFAULT_CHAT_FRAME:AddMessage("TRB: Okay");
-	
-	-- Save new OOC Alpha
-		TRB_Config.OOC_Alpha = self.OOCSlider:GetValue();
-	
 	--
 	-- Call module panels 
 	--
@@ -96,32 +88,12 @@ function TRB_Options:Okay()
 	
 	-- Restart modules
 	ThreeRuneBars:StartModules();
-	
-	-- Update Alpha
-	ThreeRuneBars:UpdateCombatFading();
-end
-
-function TRB_Options:Cancel()
-	-- Reset values to what they was before configuration started.
---	DEFAULT_CHAT_FRAME:AddMessage("TRB: Discards changes");
-	
-	-- Reset OOC Alpha
-		ThreeRuneBars:UpdateCombatFading();
-		
-	--
-	-- Call module panels 
-	--
-	for name, m in pairs(ThreeRuneBars.modules) do
-		if( m._OnCancel ) then
-			m:_OnCancel();
-		end
-	end
 end
 
 function TRB_Options:Default()
 	self:ResetConfig();
 	
-	self.OOCSlider:SetValue(TRB_Config.OOC_Alpha);
+	self.OOCSlider:SetValue(TRB_Config_Defaults.OOC_Alpha);
 	--
 	-- Call module panels 
 	--
@@ -136,7 +108,7 @@ function TRB_Options:SetOOCAlphaValue(slider, value)
 	slider.Text:SetText(format("Out of Combat Alpha: %.2f", value) );
 
 	-- Preview update
-	ThreeRuneBars:UpdateCombatFading(value);
+	ThreeRuneBars:Config_SetOOCAlpha(value);
 end
 
 -- add Options to TRB

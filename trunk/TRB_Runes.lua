@@ -144,7 +144,7 @@ end
 --
 function TRB_Runes:UpdateText( runeIndex, value, duration )
 
-	if( self.cfg.noText ) then
+	if( self:Config_GetDisableText() ) then
 		self.Runes[runeIndex].text:SetText("");
 		return;
 	end
@@ -249,20 +249,6 @@ function TRB_Runes:OnDefault()
 	self:UpdateColor(1, 0); -- Rune 1 Bar 1
 end
 
-function TRB_Runes:OnCancel()
-	-- Reset bar position
-end
-
-function TRB_Runes:OnOkay()
-	-- Disable/Enable cooldown countdown text
-	local status = self.CB_DisableText:GetChecked();
-	if( status ) then
-		TRB_Config.Runes.noText = nil;
-	else
-		TRB_Config.Runes.noText = true;
-	end
-end
-
 function TRB_Runes:OnInitOptions(panel, bottomObject)
 	--
 	-- Disable Rune cooldown counter text
@@ -271,11 +257,9 @@ function TRB_Runes:OnInitOptions(panel, bottomObject)
 	cb:SetPoint("TOPLEFT", bottomObject, "BOTTOMLEFT", 0, -20);
 	cb.text = _G[cb:GetName().."Text"];
 	cb.text:SetText("Enable "..self.name.." cooldown counter text");
-	local v = true;
-	if( TRB_Config.Runes.noText and TRB_Config.Runes.noText == true ) then
-		v = false;
-	end
-	cb:SetChecked( v );
+	cb:SetScript( "OnClick", function(self, button, down) self.owner:Config_SetDisableText( not self:GetChecked() ); end );
+	cb:SetChecked( not self:Config_GetDisableText() );
+	cb.owner = self;
 	self.CB_DisableText = cb;
 
 	---
@@ -316,4 +300,17 @@ function TRB_Runes:SetBarColor(module, name, r, g, b)
 	TRB_Config[module.name].Color = newColor;
 
 	self:UpdateColor();
+end
+
+function TRB_Module:Config_GetDisableText()
+	if( TRB_Config[self.name].noText == nil ) then return false; end
+	return TRB_Config[self.name].noText;
+end
+
+function TRB_Module:Config_SetDisableText(val)
+	if( val ) then
+		TRB_Config[self.name].noText = true;
+	else
+		TRB_Config[self.name].noText = nil;
+	end
 end
