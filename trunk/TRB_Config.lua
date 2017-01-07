@@ -9,6 +9,7 @@ TRB_Config_Defaults = {
 		["Color"] = { [1] = 0.8, [2] = 0.7, [3] = 0.9, [4] = 1 },
 		["BarSize"] = { 46, 10 },
 		["BorderSize"] = 1,
+		["FontSize"] = 12,
 	},
 
 	["Diseases"] = {
@@ -21,6 +22,7 @@ TRB_Config_Defaults = {
 		["BarSize"] = { 98, 10 },
 		["BorderSize"] = 1,
 		["IconSize"] = 18,
+		["FontSize"] = 12,
 	},
 
 	["RunicPower"] = {
@@ -28,6 +30,7 @@ TRB_Config_Defaults = {
 		["Position"] = { "CENTER", nil, "CENTER", 0, -150, },
 		["BarSize"] = { 306, 10 },
 		["BorderSize"] = 1,
+		["FontSize"] = 12,
 	},
 
 	-- Out of Combat settings

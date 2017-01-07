@@ -125,8 +125,9 @@ function TRB_RunicPower:SetBarTexture(texture)
 	self.Bar:GetStatusBarTexture():SetVertTile(false);
 end
 
-function TRB_RunicPower:OnInitOptions(panel)
-	self:CreateColorButtonOption(panel, "RPower", 420, -110);
+function TRB_RunicPower:OnInitOptions(panel, bottomObject)
+	local btn, tex = self:CreateColorButtonOption(panel, "RPower");
+	btn:SetPoint( "LEFT", self.TextureDD, "RIGHT", 20, 0 );
 end
 
 function TRB_RunicPower:GetConfigColor(module, name)
