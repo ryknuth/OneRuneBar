@@ -314,3 +314,11 @@ function TRB_Module:Config_SetDisableText(val)
 		TRB_Config[self.name].noText = nil;
 	end
 end
+
+function TRB_Module:Config_SetFontSize(val)
+	TRB_Config[self.name].FontSize = val;
+
+	for num=1, 6 do
+		self.Runes[num].text:SetFont("Fonts\\FRIZQT__.TTF", val, "");
+	end
+end
