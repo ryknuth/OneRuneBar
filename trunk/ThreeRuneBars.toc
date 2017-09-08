@@ -1,11 +1,11 @@
-## Interface: 70200
+## Interface: 70300
 ## Title: Three Rune Bars
 ## Author: istandalonetoo
-## Version: 7.2.0
+## Version: 7.3.0
 ## SavedVariables: TRB_Config
 ## Notes: Simple 1 Rune bar display. Combines all 6 runes into one energy like bar.
 ## OptionalDeps: LibSharedMedia-3.0
-## X-Curse-Packaged-Version: 7.2.0
+## X-Curse-Packaged-Version: 7.3.0
 ## X-Curse-Project-Name: ThreeRuneBars
 ## X-Curse-Project-ID: threerunebars
 ## X-Curse-Repository-ID: wow/threerunebars/mainline
