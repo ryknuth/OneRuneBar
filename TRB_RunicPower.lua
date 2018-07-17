@@ -70,7 +70,7 @@ function TRB_RunicPower:OnEnable()
 	end
 
 	-- Runic Power
-	self.frame:RegisterEvent("UNIT_POWER");
+	self.frame:RegisterEvent("UNIT_POWER_FREQUENT");
 	self.frame:RegisterEvent("UNIT_MAXPOWER");
 
 	self.frame:SetScript("OnEvent", function(frame, event, ...) frame.owner[event](frame.owner, ...); end );
@@ -88,7 +88,7 @@ function TRB_RunicPower:getDefault(val)
 end
 
 -- Runic Power EVENTS
-function TRB_RunicPower:UNIT_POWER(unit, power)
+function TRB_RunicPower:UNIT_POWER_FREQUENT(unit, power)
 	if( unit == "player" ) then
 		local rp = UnitPower("player")
 		self.Bar:SetMinMaxValues( 0, UnitPowerMax("player", 6) );
@@ -107,7 +107,7 @@ function TRB_RunicPower:OnUpdate(elapsed)
 	
 	if( self.last > 2.0 ) then
 	
-		self:UNIT_POWER("player", "RUNIC_POWER");
+		self:UNIT_POWER_FREQUENT("player", "RUNIC_POWER");
 		
 		self.last = 0;
 	end

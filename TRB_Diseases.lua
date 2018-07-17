@@ -128,8 +128,20 @@ end
 function TRB_Diseases:UpdateDiseaseBar()
 		local bar = self.DiseaseBar;
 
-		local name, _, icon, _,_,  duration, expirationTime, _ = UnitAura("target", bar.id, nil, "PLAYER|HARMFUL");
-		
+		local found = false;
+		local i = 1;
+		for i = 1, 40 do
+			local name, _, _, _, duration, expirationTime = UnitAura("target", i, "PLAYER|HARMFUL");
+			if name == bar.id then
+				found = true;
+				break;
+			end
+		end
+
+		if not found then return; end
+
+		local name, _, _, _, duration, expirationTime = UnitAura("target", i, "PLAYER|HARMFUL");
+
 		if name then
 			local val = expirationTime - GetTime();
 			local valT = format("%.0f", val);

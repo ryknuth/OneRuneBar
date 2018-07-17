@@ -221,9 +221,10 @@ function TRB_Runes:UpdateFullBar()
 end
 
 -- Runes EVENTS
-function TRB_Runes:RUNE_POWER_UPDATE(runeIndex, useable)
-	if( not useable ) then
-		self.RuneInfoTable[runeIndex][4] = false;
+function TRB_Runes:RUNE_POWER_UPDATE(...)
+	for index = 1, 6 do
+		local _, _, runeReady = GetRuneCooldown(index);
+		self.RuneInfoTable[index][4] = runeReady;
 	end
 end
 
