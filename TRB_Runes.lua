@@ -164,16 +164,14 @@ end
 
 function TRB_Runes:UpdateRuneInfoTable()
 	for runeIndex=1, 6 do
-		if( not self.RuneInfoTable[runeIndex][4] ) then
-			local start, duration, ready = GetRuneCooldown( runeIndex );
-			local value = GetTime() - start;
+		local start, duration, ready = GetRuneCooldown( runeIndex );
+		local value = GetTime() - start;
 
-			if( not value or value < 0 ) then value = 0 end;
+		if( not value or value < 0 ) then value = 0 end;
 
-			self.RuneInfoTable[runeIndex][2] = value;
-			self.RuneInfoTable[runeIndex][3] = duration;
-			self.RuneInfoTable[runeIndex][4] = ready;
-		end
+		self.RuneInfoTable[runeIndex][2] = value;
+		self.RuneInfoTable[runeIndex][3] = duration;
+		self.RuneInfoTable[runeIndex][4] = ready;
 	end
 end
 
@@ -222,10 +220,7 @@ end
 
 -- Runes EVENTS
 function TRB_Runes:RUNE_POWER_UPDATE(...)
-	for index = 1, 6 do
-		local _, _, runeReady = GetRuneCooldown(index);
-		self.RuneInfoTable[index][4] = runeReady;
-	end
+	self:UpdateFullBar();
 end
 
 -- OnUpdate
