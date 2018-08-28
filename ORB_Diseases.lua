@@ -128,21 +128,18 @@ end
 function ORB_Diseases:UpdateDiseaseBar()
 	local bar = self.DiseaseBar;
 
+	local duration, expirationTime, name;
+
 	local found = false;
-	local i = 1;
 	for i = 1, 40 do
-		local name, _, _, _, duration, expirationTime = UnitAura("target", i, "PLAYER|HARMFUL");
+		name, _, _, _, duration, expirationTime = UnitAura("target", i, "PLAYER|HARMFUL");
 		if name == bar.id then
 			found = true;
 			break;
 		end
 	end
 
-	if not found then return; end
-
-	local name, _, _, _, duration, expirationTime = UnitAura("target", i, "PLAYER|HARMFUL");
-
-	if name then
+	if found then
 		local val = expirationTime - GetTime();
 		local valT = format("%.0f", val);
 		if( val < 5 ) then valT = format("%.1f", val); end
