@@ -124,7 +124,24 @@ function OneRuneBar:ADDON_LOADED(addon)
 		if( self.Options ) then
 			self.Options:init();	-- Initialize ORB's Option frame and LoadConfig
 		end
-		
+
+		if( not ORB_Config.SeenTRBTransition ) then
+			StaticPopupDialogs["TRB_TRANSITION_POPUP"] = {
+				text = "Thank you for using One Rune Bar! If you previously used ThreeRuneBars, please take a moment to copy over your saved variables. First, copy these instructions and logout. Second, Navigate to your World of Warcraft installation folder, then navigate to WTF/Account/<your account name>/SavedVariables. Third, delete any existing OneRuneBar.lua file and rename ThreeRuneBars.lua to OneRuneBar.lua. Fourth, disable ThreeRuneBars in the addon config within World of Warcraft and log back in. Everything should be as it was!",
+				button1 = "OK",
+				button2 = "Show Again",
+				OnAccept = function()
+					ORB_Config.SeenTRBTransition = true;
+				end,
+				timeout = 0,
+				whileDead = true,
+				hideOnEscape = true,
+				preferredIndex = 3,  -- avoid some UI taint, see http://www.wowace.com/announcements/how-to-avoid-some-ui-taint/
+			};
+
+			StaticPopup_Show("TRB_TRANSITION_POPUP");
+		end;
+
 		-- Start sub modules like Runes, RunicPower and Diseases
 		self:StartModules();
 		

@@ -35,4 +35,5 @@ ORB_Config_Defaults = {
 
 	-- Out of Combat settings
 	["OOC_Alpha"] = 0.7,
+	["SeenTRBTransition"] = false
 };
