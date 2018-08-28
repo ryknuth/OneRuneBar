@@ -139,7 +139,7 @@ function ORB_Diseases:UpdateDiseaseBar()
 		end
 	end
 
-	if found then
+	if found and expirationTime ~= nil and duration ~= nil then
 		local val = expirationTime - GetTime();
 		local valT = format("%.0f", val);
 		if( val < 5 ) then valT = format("%.1f", val); end

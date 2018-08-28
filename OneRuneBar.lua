@@ -136,7 +136,7 @@ function OneRuneBar:ADDON_LOADED(addon)
 				timeout = 0,
 				whileDead = true,
 				hideOnEscape = true,
-				preferredIndex = 3,  -- avoid some UI taint, see http://www.wowace.com/announcements/how-to-avoid-some-ui-taint/
+				preferredIndex = 3,
 			};
 
 			StaticPopup_Show("TRB_TRANSITION_POPUP");
@@ -150,6 +150,7 @@ function OneRuneBar:ADDON_LOADED(addon)
 		self:RegisterEvent("PLAYER_REGEN_DISABLED");
 		self:RegisterEvent("PET_BATTLE_OPENING_START");
 		self:RegisterEvent("PET_BATTLE_OVER");
+		self:UnregisterEvent("ADDON_LOADED");
 
 		-- Update OOC and FrameStrata state
 		self:PLAYER_REGEN_ENABLED();
