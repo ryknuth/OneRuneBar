@@ -29,7 +29,7 @@ function ORB_Options:init()
 	
 	local header = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge");
 	header:SetPoint("TOPLEFT", panel, "TOPLEFT", xoff, yoff);
-	header:SetText(panel.name.." v"..GetAddOnMetadata("ThreeRunebars", "Version") );
+	header:SetText(panel.name.." v"..GetAddOnMetadata("Onerunebar", "Version") );
 	panel.header = header;
 	
 	-- OOC Alpha

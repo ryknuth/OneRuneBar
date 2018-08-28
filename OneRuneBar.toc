@@ -1,7 +1,7 @@
 ## Interface: 80000
 ## Title: One Rune Bar
 ## Author: istandalonetoo
-## Version: 8.0.1
+## Version: 8.0.2
 ## SavedVariables: ORB_Config
 ## Notes: Simple 1 Rune bar display. Combines all 6 runes into one energy like bar.
 ## OptionalDeps: LibSharedMedia-3.0
