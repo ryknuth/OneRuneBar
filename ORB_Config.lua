@@ -3,7 +3,7 @@ if select(2, UnitClass("player")) ~= "DEATHKNIGHT" then
 	return
 end
 
-TRB_Config_Defaults = {
+ORB_Config_Defaults = {
 	["Runes"] = {
 		["Position"] = { "CENTER", nil, "CENTER", 0, -135, },
 		["Color"] = { [1] = 0.8, [2] = 0.7, [3] = 0.9, [4] = 1 },

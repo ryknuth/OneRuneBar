@@ -8,12 +8,12 @@ local NoTextureText = "(none)";
 
 ------------------------------------------------------------------
 
-TRB_Module		= {};
+ORB_Module		= {};
 
 --
 -- Change strata level for this module. Used when entering/leaving combat
 --
-function TRB_Module:ChangeStrata(strata)
+function ORB_Module:ChangeStrata(strata)
 	if( self.frame) then
 		self.frame:SetFrameStrata(strata);
 	end
@@ -22,13 +22,13 @@ end
 --
 -- Create a module.
 -- Use:
--- local myModule = TRB_Module:create("SomeName");
+-- local myModule = ORB_Module:create("SomeName");
 -- function myModule:OnEnable() (do stuff) end
--- ThreeRuneBars:RegisterModule(myModule);
+-- OneRuneBar:RegisterModule(myModule);
 --
-function TRB_Module:create(name)
+function ORB_Module:create(name)
 	local n = {};
-	setmetatable(n, { __index = TRB_Module } );
+	setmetatable(n, { __index = ORB_Module } );
 	n.name = name;
 	return n;
 end
@@ -36,11 +36,11 @@ end
 --
 -- Init the module, Modules should use Enable
 --
-function TRB_Module:init()
+function ORB_Module:init()
 	if( self.isRunning ) then return; end
 
 	if( not self.cfg ) then
-		self.cfg = TRB_Config[self.name];
+		self.cfg = ORB_Config[self.name];
 	end
 
 	-- Now we are ready to enable this module
@@ -50,12 +50,12 @@ function TRB_Module:init()
 	self:Print((self.name or "Unknown").." module enabled.");
 end
 
-function TRB_Module:CreateTexture(f)
+function ORB_Module:CreateTexture(f)
 	local tex = f:CreateTexture(nil, "BACKGROUND");
 	return tex;
 end
 
-function TRB_Module:CreateBar(name, parent)
+function ORB_Module:CreateBar(name, parent)
 	local Bar = CreateFrame("StatusBar", name, parent);
 	Bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar");
 	Bar:GetStatusBarTexture():SetHorizTile(true);
@@ -76,7 +76,7 @@ function TRB_Module:CreateBar(name, parent)
 	return Bar;
 end
 
-function TRB_Module:CreateMoveFrame()
+function ORB_Module:CreateMoveFrame()
 	local f = CreateFrame("frame", nil, self.frame);
 	f.parent = self.frame;
 	f:SetAllPoints(f.parent);
@@ -95,7 +95,7 @@ function TRB_Module:CreateMoveFrame()
 	self.moveFrame = f;
 end
 
-function TRB_Module:CreateBorderTexture(f, from, to)
+function ORB_Module:CreateBorderTexture(f, from, to)
 	local t = self:CreateTexture(f);
 	t:SetPoint(from, f, to, 0, 0);
 	t:SetPoint(to, f, from, 0, 0);
@@ -103,14 +103,14 @@ function TRB_Module:CreateBorderTexture(f, from, to)
 	return t;
 end
 
-function TRB_Module:CreateBorder(f)
+function ORB_Module:CreateBorder(f)
 	f.t = self:CreateBorderTexture( f, "TOPLEFT", "TOPRIGHT" );
 	f.b = self:CreateBorderTexture( f, "BOTTOMLEFT", "BOTTOMRIGHT" );
 	f.l = self:CreateBorderTexture( f, "TOPLEFT", "BOTTOMLEFT" );
 	f.r = self:CreateBorderTexture( f, "TOPRIGHT", "BOTTOMRIGHT" );
 end
 
-function TRB_Module:UpdateBorderSizes( f )
+function ORB_Module:UpdateBorderSizes( f )
 	local borderSize = self:Config_GetBorderSize();
 
 	f.t:SetHeight( borderSize );
@@ -119,7 +119,7 @@ function TRB_Module:UpdateBorderSizes( f )
 	f.r:SetWidth( borderSize );
 end
 
-function TRB_Module:Disable()
+function ORB_Module:Disable()
 	if( not self.isRunning ) then return; end -- Not running
 	
 	-- Hide frame and unregister all events
@@ -134,7 +134,7 @@ function TRB_Module:Disable()
 	self:Print(self.name.." module disabled.");
 end
 
-function TRB_Module:ChangeVisibility(show)
+function ORB_Module:ChangeVisibility(show)
 	if( not self.isRunning ) then return; end
 
 	if( self.frame ) then
@@ -146,20 +146,20 @@ function TRB_Module:ChangeVisibility(show)
 	end
 end
 
-function TRB_Module:Print(msg)
-	DEFAULT_CHAT_FRAME:AddMessage("TRB: "..msg);
+function ORB_Module:Print(msg)
+	DEFAULT_CHAT_FRAME:AddMessage("ORB: "..msg);
 end
 
-function TRB_Module:SavePosition()
+function ORB_Module:SavePosition()
 	if( not self.frame ) then return; end
 	
---	TRB_Config[self.name].Position = { self.frame:GetPoint() };
+--	ORB_Config[self.name].Position = { self.frame:GetPoint() };
 	
 	-- Save position
 	self.cfg.Position = { self.frame:GetPoint() };
 end
 
-function TRB_Module:LoadPosition()
+function ORB_Module:LoadPosition()
 	if( not self.frame ) then return; end -- if no frame exists no position exists.
 
 	if( self.cfg and self.cfg.Position ) then
@@ -173,29 +173,29 @@ function TRB_Module:LoadPosition()
 	end
 end
 
-function TRB_Module:Error(msg)
-	DEFAULT_CHAT_FRAME:AddMessage("TRB Error: "..msg);
+function ORB_Module:Error(msg)
+	DEFAULT_CHAT_FRAME:AddMessage("ORB Error: "..msg);
 end
 
-function TRB_Module:ResetConfig()
+function ORB_Module:ResetConfig()
 	
 	-- Create new empty table
-	TRB_Config[self.name] = nil; self.cfg = nil;
-	TRB_Config[self.name] = {};
+	ORB_Config[self.name] = nil; self.cfg = nil;
+	ORB_Config[self.name] = {};
 	
 	-- Copy default values needed for this module
-	for k,v in pairs(TRB_Config_Defaults[self.name]) do
-		TRB_Config[self.name][k] = v;
+	for k,v in pairs(ORB_Config_Defaults[self.name]) do
+		ORB_Config[self.name][k] = v;
 	end
 	
 	-- Set it as our config
-	self.cfg = TRB_Config[self.name];	
+	self.cfg = ORB_Config[self.name];	
 end
 
-function TRB_Module:InitOptions(parent)
+function ORB_Module:InitOptions(parent)
 
 	-- Make sure we have our configuration settings available
-	if( not TRB_Config[self.name] ) then
+	if( not ORB_Config[self.name] ) then
 		self:ResetConfig();
 	end
 
@@ -216,12 +216,12 @@ function TRB_Module:InitOptions(parent)
 	panel.header = header;
 	
 	-- Module disable checkbox
-	local cb = CreateFrame("CheckButton", "TRB_DisableModule_"..self.name, panel, "InterfaceOptionsCheckButtonTemplate");
+	local cb = CreateFrame("CheckButton", "ORB_DisableModule_"..self.name, panel, "InterfaceOptionsCheckButtonTemplate");
 	cb:SetPoint("TOPLEFT", header, "TOPLEFT", 0, yoff);
 	cb.text = _G[cb:GetName().."Text"];
 	cb.text:SetText("Enable "..self.name.." module");
 	local v = true;
-	if( TRB_Config.disabled_modules and TRB_Config.disabled_modules[self.name] and TRB_Config.disabled_modules[self.name] == true ) then
+	if( ORB_Config.disabled_modules and ORB_Config.disabled_modules[self.name] and ORB_Config.disabled_modules[self.name] == true ) then
 		v = false;
 	end
 	cb:SetChecked( v );
@@ -232,12 +232,12 @@ function TRB_Module:InitOptions(parent)
 	textureText:SetPoint("TOPLEFT", cb, "BOTTOMLEFT", 0, yoff);
 	textureText:SetText("Texture");
 
-	local textureDD = CreateFrame("frame", "TRB_ModuleTextureDD_"..self.name, panel, "UIDropDownMenuTemplate");
+	local textureDD = CreateFrame("frame", "ORB_ModuleTextureDD_"..self.name, panel, "UIDropDownMenuTemplate");
 	textureDD:ClearAllPoints();
 	textureDD:SetPoint("TOPLEFT", textureText, "BOTTOMLEFT", -20, 0);
 	textureDD:SetScript("OnShow", function(self)
-									UIDropDownMenu_SetSelectedValue(self, TRB_Config[self.owner.name].Texture or NoTextureText);
-									UIDropDownMenu_SetText(self, TRB_Config[self.owner.name].Texture or NoTextureText);
+									UIDropDownMenu_SetSelectedValue(self, ORB_Config[self.owner.name].Texture or NoTextureText);
+									UIDropDownMenu_SetText(self, ORB_Config[self.owner.name].Texture or NoTextureText);
 								end
 						);
 	textureDD:Show();
@@ -282,7 +282,7 @@ function TRB_Module:InitOptions(parent)
 	local borderSizeLabel = self:CreateLabel( panel, "Border Size:");
 	borderSizeLabel:SetPoint("TOPLEFT", textureDD, "BOTTOMLEFT", 20, yoff);
 	
-	local borderSizeBox = self:CreateEditBox( panel, "TRB_ModuleBorderSizeEditBox_"..self.name,
+	local borderSizeBox = self:CreateEditBox( panel, "ORB_ModuleBorderSizeEditBox_"..self.name,
 		function(self) return self:Config_GetBorderSize(); end,
 		function(self, value) self:Config_SetBorderSize(value); end );
 	borderSizeBox:SetPoint("TOPLEFT", borderSizeLabel, "TOPRIGHT", 4, 0);
@@ -291,7 +291,7 @@ function TRB_Module:InitOptions(parent)
 	local barWidthLabel = self:CreateLabel( panel, "Bar Width:");
 	barWidthLabel:SetPoint("TOPLEFT", borderSizeLabel, "BOTTOMLEFT", 0, yoff);
 	
-	local barWidthBox = self:CreateEditBox( panel, "TRB_ModuleBarWidthEditBox_"..self.name,
+	local barWidthBox = self:CreateEditBox( panel, "ORB_ModuleBarWidthEditBox_"..self.name,
 		function(self) return self:Config_GetBarSize()[1]; end,
 		function(self, value) self:Config_SetBarSize(value, self:Config_GetBarSize()[2]); end );
 	barWidthBox:SetPoint("TOPLEFT", barWidthLabel, "TOPRIGHT", 4, 0);
@@ -300,7 +300,7 @@ function TRB_Module:InitOptions(parent)
 	local barHeightLabel = self:CreateLabel( panel, "Height:");
 	barHeightLabel:SetPoint("TOPLEFT", barWidthBox, "TOPRIGHT", 4, 0);
 	
-	local barHeightBox = self:CreateEditBox( panel, "TRB_ModuleBarHeightEditBox_"..self.name,
+	local barHeightBox = self:CreateEditBox( panel, "ORB_ModuleBarHeightEditBox_"..self.name,
 		function(self) return self:Config_GetBarSize()[2]; end,
 		function(self, value) self:Config_SetBarSize(self:Config_GetBarSize()[1], value); end );
 	barHeightBox:SetPoint("TOPLEFT", barHeightLabel, "TOPRIGHT", 4, 0);
@@ -309,7 +309,7 @@ function TRB_Module:InitOptions(parent)
 	local fontSizeLabel = self:CreateLabel( panel, "Font Size:");
 	fontSizeLabel:SetPoint("TOPLEFT", barWidthLabel, "BOTTOMLEFT", 0, yoff);
 	
-	local fontSizeBox = self:CreateEditBox( panel, "TRB_ModuleBarFontSizeEditBox_"..self.name,
+	local fontSizeBox = self:CreateEditBox( panel, "ORB_ModuleBarFontSizeEditBox_"..self.name,
 		function(self) return self:Config_GetFontSize(); end,
 		function(self, value) self:Config_SetFontSize(value); end );
 	fontSizeBox:SetPoint("TOPLEFT", fontSizeLabel, "TOPRIGHT", 4, 0);
@@ -324,19 +324,19 @@ function TRB_Module:InitOptions(parent)
 	InterfaceOptions_AddCategory(self.panel);
 end
 
-function TRB_Module:CreateColorButtonOption(panel, name)
+function ORB_Module:CreateColorButtonOption(panel, name)
 	local btn = CreateFrame("button", self.name..name.."button", panel, "UIPanelButtonTemplate");
 	btn.owner = self;
-	btn.trbcolorname = name;
+	btn.orbcolorname = name;
 	btn:SetWidth(80);
 	btn:SetHeight(22);
 	btn:SetText(name);
 	btn:SetScript("OnClick", function(self) 
-								ColorPickerFrame.previousValues = { self.owner:GetConfigColor(self.owner, self.trbcolorname) };
-								ColorPickerFrame.func = function() self.owner:SetBarColor(self.owner, self.trbcolorname, ColorPickerFrame:GetColorRGB()) end;
-								ColorPickerFrame.opacityFunc = function() self.owner:SetBarColor(self.owner, self.trbcolorname, ColorPickerFrame:GetColorRGB()); end;
-								ColorPickerFrame.cancelFunc = function() self.owner:SetBarColor(self.owner, self.trbcolorname, unpack(ColorPickerFrame.previousValues)); end;
-								ColorPickerFrame:SetColorRGB( self.owner:GetConfigColor(self.owner, self.trbcolorname) );
+								ColorPickerFrame.previousValues = { self.owner:GetConfigColor(self.owner, self.orbcolorname) };
+								ColorPickerFrame.func = function() self.owner:SetBarColor(self.owner, self.orbcolorname, ColorPickerFrame:GetColorRGB()) end;
+								ColorPickerFrame.opacityFunc = function() self.owner:SetBarColor(self.owner, self.orbcolorname, ColorPickerFrame:GetColorRGB()); end;
+								ColorPickerFrame.cancelFunc = function() self.owner:SetBarColor(self.owner, self.orbcolorname, unpack(ColorPickerFrame.previousValues)); end;
+								ColorPickerFrame:SetColorRGB( self.owner:GetConfigColor(self.owner, self.orbcolorname) );
 								ColorPickerFrame:SetFrameStrata("DIALOG");
 								ColorPickerFrame:Show();
 							 end);
@@ -356,13 +356,13 @@ function TRB_Module:CreateColorButtonOption(panel, name)
 	return btn, tex;
 end
 
-function TRB_Module:CreateLabel( panel, labelText )
+function ORB_Module:CreateLabel( panel, labelText )
 	local label = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight");
 	label:SetText(labelText);
 	return label
 end
 
-function TRB_Module:CreateEditBox( panel, name, getConfigFunc, setConfigFunc )
+function ORB_Module:CreateEditBox( panel, name, getConfigFunc, setConfigFunc )
 	local box = CreateFrame( "editbox", name, panel, "InputBoxTemplate");
 	box.owner = self;
 	box:SetHeight(30);
@@ -378,26 +378,26 @@ function TRB_Module:CreateEditBox( panel, name, getConfigFunc, setConfigFunc )
 	return box;
 end
 
-function TRB_Module:_OnOkay()
+function ORB_Module:_OnOkay()
 	-- Disable/Enable
 	local status = self.CB_Disabled:GetChecked();
 	if( status and not self.isRunning ) then
 		--self:Print(self.name.." module activated.");
-		TRB_Config.disabled_modules[self.name] = nil;
+		ORB_Config.disabled_modules[self.name] = nil;
 		
 	elseif( not status and self.isRunning ) then
 		--self:Print(self.name.." module deactivated.");
-		if( not TRB_Config.disabled_modules ) then TRB_Config.disabled_modules = {}; end
-		TRB_Config.disabled_modules[self.name] = true;
+		if( not ORB_Config.disabled_modules ) then ORB_Config.disabled_modules = {}; end
+		ORB_Config.disabled_modules[self.name] = true;
 	end
 end
 
-function TRB_Module:_OnDefault()
+function ORB_Module:_OnDefault()
 	self:ResetConfig();
 
 	-- Load default value
 	local v = true;
-	if( TRB_Config_Defaults.disabled_modules and TRB_Config_Defaults.disabled_modules[self.name] and TRB_Config_Defaults.disabled_modules[self.name] == true ) then
+	if( ORB_Config_Defaults.disabled_modules and ORB_Config_Defaults.disabled_modules[self.name] and ORB_Config_Defaults.disabled_modules[self.name] == true ) then
 		v = false;
 	end
 	self.CB_Disabled:SetChecked( v );
@@ -413,35 +413,35 @@ function TRB_Module:_OnDefault()
 	end
 end
 
-function TRB_Module:Config_GetBorderSize()
-	return TRB_Config[self.name].BorderSize or TRB_Config_Defaults[self.name].BorderSize;
+function ORB_Module:Config_GetBorderSize()
+	return ORB_Config[self.name].BorderSize or ORB_Config_Defaults[self.name].BorderSize;
 end
 
-function TRB_Module:Config_SetBorderSize(val)
-	TRB_Config[self.name].BorderSize = val;
+function ORB_Module:Config_SetBorderSize(val)
+	ORB_Config[self.name].BorderSize = val;
 
 	if( self.PositionFrame ) then
 		self:PositionFrame();
 	end
 end
 
-function TRB_Module:Config_GetBarSize()
-	return TRB_Config[self.name].BarSize or TRB_Config_Defaults[self.name].BarSize;
+function ORB_Module:Config_GetBarSize()
+	return ORB_Config[self.name].BarSize or ORB_Config_Defaults[self.name].BarSize;
 end
 
-function TRB_Module:Config_SetBarSize(width, height)
-	TRB_Config[self.name].BarSize = { width, height };
+function ORB_Module:Config_SetBarSize(width, height)
+	ORB_Config[self.name].BarSize = { width, height };
 
 	if( self.PositionFrame ) then
 		self:PositionFrame();
 	end
 end
 
-function TRB_Module:Config_GetFontSize()
-	return TRB_Config[self.name].FontSize or TRB_Config_Defaults[self.name].FontSize;
+function ORB_Module:Config_GetFontSize()
+	return ORB_Config[self.name].FontSize or ORB_Config_Defaults[self.name].FontSize;
 end
 
-function TRB_Module:Config_SetFontSize(val)
-	TRB_Config[self.name].FontSize = val;
+function ORB_Module:Config_SetFontSize(val)
+	ORB_Config[self.name].FontSize = val;
 	self.Bar.text:SetFont("Fonts\\FRIZQT__.TTF", val, "");
 end

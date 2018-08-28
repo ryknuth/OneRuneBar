@@ -4,19 +4,19 @@ end
 
 ------------------------------------------------------------------------
 
-TRB_Runes = TRB_Module:create("Runes");
+ORB_Runes = ORB_Module:create("Runes");
 -- Register Rune module
-ThreeRuneBars:RegisterModule(TRB_Runes);
+OneRuneBar:RegisterModule(ORB_Runes);
 ------------------------------------------------------------------------
 
-function TRB_Runes:OnDisable()
+function ORB_Runes:OnDisable()
 	self.frame:SetScript("OnUpdate", nil);
 	self.frame:SetScript("OnEvent", nil);
 end
 
-function TRB_Runes:CreateRunes()
+function ORB_Runes:CreateRunes()
 	for num=1, 6 do
-		local bar = self:CreateBar( "TRB_Rune"..num, self.frame);
+		local bar = self:CreateBar( "ORB_Rune"..num, self.frame);
 		self.Runes[num] = bar;
 
 		if( num ~= 1 ) then
@@ -25,7 +25,7 @@ function TRB_Runes:CreateRunes()
 	end
 end
 
-function TRB_Runes:PositionRunes()
+function ORB_Runes:PositionRunes()
 	local borderSize = self:Config_GetBorderSize();
 	local barSize = self:Config_GetBarSize();
 
@@ -41,7 +41,7 @@ function TRB_Runes:PositionRunes()
 	end
 end
 
-function TRB_Runes:CreateMiddleLine(bar1, bar2)
+function ORB_Runes:CreateMiddleLine(bar1, bar2)
 	local t = self:CreateTexture(self.frame);
 	t:SetColorTexture( 0.0, 0.0, 0.0 );
 	t:SetPoint("TOPLEFT", bar1, "TOPRIGHT", 0, 0 );
@@ -49,7 +49,7 @@ function TRB_Runes:CreateMiddleLine(bar1, bar2)
 	return t;
 end
 
-function TRB_Runes:CreateFrame()
+function ORB_Runes:CreateFrame()
 	local frame = CreateFrame("frame", nil, UIParent);
 
 	frame.owner = self;
@@ -68,7 +68,7 @@ function TRB_Runes:CreateFrame()
 	self:UpdateColor();
 end
 
-function TRB_Runes:PositionFrame()
+function ORB_Runes:PositionFrame()
 	local borderSize = self:Config_GetBorderSize();
 	local barSize = self:Config_GetBarSize();
 
@@ -79,7 +79,7 @@ function TRB_Runes:PositionFrame()
 	self:UpdateBorderSizes( self.frame );
 end
 
-function TRB_Runes:OnEnable()
+function ORB_Runes:OnEnable()
 	if( not self.frame ) then
 		self:CreateFrame();
 	end
@@ -119,7 +119,7 @@ end
 -- UpdateColor(rune, currentValue, duration)
 -- Update the runebar color
 --
-function TRB_Runes:UpdateColor(currentValue, duration)
+function ORB_Runes:UpdateColor(currentValue, duration)
 	local a = 1;
 	if( (currentValue or 1) < (duration or 0) ) then
 		a = 0.8;
@@ -127,9 +127,9 @@ function TRB_Runes:UpdateColor(currentValue, duration)
 
 	if( not self.cfg.Color ) then
 		self.cfg.Color = {}
-		self.cfg.Color[1] = TRB_Config_Defaults.Runes.Color[1];
-		self.cfg.Color[2] = TRB_Config_Defaults.Runes.Color[2];
-		self.cfg.Color[3] = TRB_Config_Defaults.Runes.Color[3];
+		self.cfg.Color[1] = ORB_Config_Defaults.Runes.Color[1];
+		self.cfg.Color[2] = ORB_Config_Defaults.Runes.Color[2];
+		self.cfg.Color[3] = ORB_Config_Defaults.Runes.Color[3];
 	end;
 
 	-- Update Runebar color
@@ -142,7 +142,7 @@ end
 -- UpdateText
 -- Update cooldown text on runebars
 --
-function TRB_Runes:UpdateText( runeIndex, value, duration )
+function ORB_Runes:UpdateText( runeIndex, value, duration )
 
 	if( self:Config_GetDisableText() ) then
 		self.Runes[runeIndex].text:SetText("");
@@ -162,7 +162,7 @@ function TRB_Runes:UpdateText( runeIndex, value, duration )
 	end
 end
 
-function TRB_Runes:UpdateRuneInfoTable()
+function ORB_Runes:UpdateRuneInfoTable()
 	for runeIndex=1, 6 do
 		local start, duration, ready = GetRuneCooldown( runeIndex );
 		local value = GetTime() - start;
@@ -175,7 +175,7 @@ function TRB_Runes:UpdateRuneInfoTable()
 	end
 end
 
-function TRB_sort(t)
+function ORB_sort(t)
 	local itemCount = #t;
 
 	local hasChanged = true;
@@ -196,15 +196,15 @@ function TRB_sort(t)
 	end
 end
 
-function TRB_Runes:SortRuneInfos()
+function ORB_Runes:SortRuneInfos()
 	for runeIndex=1, 6 do
 		self.SortedRuneInfos[runeIndex] = self.RuneInfoTable[runeIndex];
 	end
 
-	TRB_sort(self.SortedRuneInfos);
+	ORB_sort(self.SortedRuneInfos);
 end
 
-function TRB_Runes:UpdateFullBar()
+function ORB_Runes:UpdateFullBar()
 	self:UpdateRuneInfoTable();
 	self:SortRuneInfos();
 
@@ -219,12 +219,12 @@ function TRB_Runes:UpdateFullBar()
 end
 
 -- Runes EVENTS
-function TRB_Runes:RUNE_POWER_UPDATE(...)
+function ORB_Runes:RUNE_POWER_UPDATE(...)
 	self:UpdateFullBar();
 end
 
 -- OnUpdate
-function TRB_Runes:OnUpdate(elapsed)
+function ORB_Runes:OnUpdate(elapsed)
 	self.last = self.last + elapsed;
 
 	if( self.last > 0.01 ) then
@@ -240,16 +240,16 @@ end
 -- OnDefault
 -- Update the settings UI elements.
 --
-function TRB_Runes:OnDefault()
+function ORB_Runes:OnDefault()
 	-- Update the Color of the runebars
 	self:UpdateColor(1, 0); -- Rune 1 Bar 1
 end
 
-function TRB_Runes:OnInitOptions(panel, bottomObject)
+function ORB_Runes:OnInitOptions(panel, bottomObject)
 	--
 	-- Disable Rune cooldown counter text
 	--
-	local cb = CreateFrame("CheckButton", "TRB_Runes_DisableText", panel, "InterfaceOptionsCheckButtonTemplate");
+	local cb = CreateFrame("CheckButton", "ORB_Runes_DisableText", panel, "InterfaceOptionsCheckButtonTemplate");
 	cb:SetPoint("TOPLEFT", bottomObject, "BOTTOMLEFT", 0, -20);
 	cb.text = _G[cb:GetName().."Text"];
 	cb.text:SetText("Enable "..self.name.." cooldown counter text");
@@ -266,7 +266,7 @@ function TRB_Runes:OnInitOptions(panel, bottomObject)
 	btn:SetPoint( "LEFT", self.TextureDD, "RIGHT", 20, 0 );
 end
 
-function TRB_Runes:SetBarTexture(texture)
+function ORB_Runes:SetBarTexture(texture)
 	self.cfg.Texture = texture;
 
 	if( not SM ) then
@@ -280,39 +280,39 @@ function TRB_Runes:SetBarTexture(texture)
 	end
 end
 
-function TRB_Runes:GetConfigColor(module)
-	if( not TRB_Config[module.name].Color ) then
-		TRB_Config[module.name].Color = TRB_Config_Defaults[module.name].Color;
+function ORB_Runes:GetConfigColor(module)
+	if( not ORB_Config[module.name].Color ) then
+		ORB_Config[module.name].Color = ORB_Config_Defaults[module.name].Color;
 	end
 
-	return unpack(TRB_Config[module.name].Color);
+	return unpack(ORB_Config[module.name].Color);
 end
 
-function TRB_Runes:SetBarColor(module, name, r, g, b)
+function ORB_Runes:SetBarColor(module, name, r, g, b)
 	module.panel.barcolor[name]:SetColorTexture(r, g, b);
 
 	local newColor = {r, g, b, 1};
 
-	TRB_Config[module.name].Color = newColor;
+	ORB_Config[module.name].Color = newColor;
 
 	self:UpdateColor();
 end
 
-function TRB_Module:Config_GetDisableText()
-	if( TRB_Config[self.name].noText == nil ) then return false; end
-	return TRB_Config[self.name].noText;
+function ORB_Module:Config_GetDisableText()
+	if( ORB_Config[self.name].noText == nil ) then return false; end
+	return ORB_Config[self.name].noText;
 end
 
-function TRB_Module:Config_SetDisableText(val)
+function ORB_Module:Config_SetDisableText(val)
 	if( val ) then
-		TRB_Config[self.name].noText = true;
+		ORB_Config[self.name].noText = true;
 	else
-		TRB_Config[self.name].noText = nil;
+		ORB_Config[self.name].noText = nil;
 	end
 end
 
-function TRB_Module:Config_SetFontSize(val)
-	TRB_Config[self.name].FontSize = val;
+function ORB_Module:Config_SetFontSize(val)
+	ORB_Config[self.name].FontSize = val;
 
 	for num=1, 6 do
 		self.Runes[num].text:SetFont("Fonts\\FRIZQT__.TTF", val, "");

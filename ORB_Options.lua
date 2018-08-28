@@ -4,23 +4,23 @@ end
 -----------------------------------------------------------------------------------
 -- Info on panels: http://www.wowwiki.com/Using_the_Interface_Options_Addons_panel
 -----------------------------------------------------------------------------------
-TRB_Options = {};
+ORB_Options = {};
 
-function TRB_Options:init()
+function ORB_Options:init()
 	--
 	-- Make sure we have our configuration available
 	--
-	if ( not TRB_Config ) then 
+	if ( not ORB_Config ) then
 		self:ResetConfig();
 	end
 
 	--
-	-- Create settings panel for ThreeRuneBars under the addon settings in the Blizzard UI
+	-- Create settings panel for OneRuneBar under the addon settings in the Blizzard UI
 	--
-	local panel = CreateFrame("frame", "ThreeRuneBars_Options", UIParent);
-	panel.name = "Three Rune Bars";
-	panel.okay = function() TRB_Options:Okay(TRB_Options); end
-	panel.default = function() TRB_Options:Default(TRB_Options); end
+	local panel = CreateFrame("frame", "OneRuneBar_Options", UIParent);
+	panel.name = "One Rune Bar";
+	panel.okay = function() ORB_Options:Okay(ORB_Options); end
+	panel.default = function() ORB_Options:Default(ORB_Options); end
 
 	--
 	-- Main panel
@@ -33,7 +33,7 @@ function TRB_Options:init()
 	panel.header = header;
 	
 	-- OOC Alpha
-	local OOCSlider = CreateFrame("slider", "TRB_OOCSlider", panel, "OptionsSliderTemplate");
+	local OOCSlider = CreateFrame("slider", "ORB_OOCSlider", panel, "OptionsSliderTemplate");
 	OOCSlider:SetPoint("TOPLEFT", panel, "TOPLEFT", xoff, yoff-50);
 	OOCSlider:SetWidth(200);
 	OOCSlider:SetHeight(20);
@@ -44,8 +44,8 @@ function TRB_Options:init()
 	_G[OOCSlider:GetName().."Low"]:SetText("0.0");
 	_G[OOCSlider:GetName().."High"]:SetText("1.0");
 	OOCSlider.Text = _G[OOCSlider:GetName().."Text"];
-	OOCSlider:SetScript("OnValueChanged", function(self, value) TRB_Options:SetOOCAlphaValue(self, value); end);
-	OOCSlider:SetValue(ThreeRuneBars:Config_GetOOCAlpha());
+	OOCSlider:SetScript("OnValueChanged", function(self, value) ORB_Options:SetOOCAlphaValue(self, value); end);
+	OOCSlider:SetValue(OneRuneBar:Config_GetOOCAlpha());
 	OOCSlider.Text:SetText( format("Out of Combat Alpha: %.2f", OOCSlider:GetValue()) );
 	self.OOCSlider = OOCSlider;
 	
@@ -58,7 +58,7 @@ function TRB_Options:init()
 	--
 	-- Add module panels to blizzards addon config
 	--
-	for name, m in pairs(ThreeRuneBars.modules) do
+	for name, m in pairs(OneRuneBar.modules) do
 		if( m.InitOptions ) then
 			m:InitOptions(self.panel);
 		end
@@ -66,78 +66,78 @@ function TRB_Options:init()
 
 end
 
-function TRB_Options:ResetConfig()
-	DEFAULT_CHAT_FRAME:AddMessage("TRB: Default config loaded.");
+function ORB_Options:ResetConfig()
+	DEFAULT_CHAT_FRAME:AddMessage("ORB: Default config loaded.");
 	
-	TRB_Config = nil;
-	TRB_Config = {};
+	ORB_Config = nil;
+	ORB_Config = {};
 	
 	-- Copy default settings
-	TRB_Config.OOC_Alpha = TRB_Config_Defaults.OOC_Alpha;
+	ORB_Config.OOC_Alpha = ORB_Config_Defaults.OOC_Alpha;
 end
 
-function TRB_Options:Okay()
+function ORB_Options:Okay()
 	--
 	-- Call module panels 
 	--
-	for name, m in pairs(ThreeRuneBars.modules) do
+	for name, m in pairs(OneRuneBar.modules) do
 		if( m._OnOkay ) then
 			m:_OnOkay();
 		end
 	end
 	
 	-- Restart modules
-	ThreeRuneBars:StartModules();
+	OneRuneBar:StartModules();
 end
 
-function TRB_Options:Default()
+function ORB_Options:Default()
 	self:ResetConfig();
 	
-	self.OOCSlider:SetValue(TRB_Config_Defaults.OOC_Alpha);
+	self.OOCSlider:SetValue(ORB_Config_Defaults.OOC_Alpha);
 	--
 	-- Call module panels 
 	--
-	for name, m in pairs(ThreeRuneBars.modules) do
+	for name, m in pairs(OneRuneBar.modules) do
 		if( m._OnDefault ) then
 			m:_OnDefault();
 		end
 	end
 end
 
-function TRB_Options:SetOOCAlphaValue(slider, value)
+function ORB_Options:SetOOCAlphaValue(slider, value)
 	slider.Text:SetText(format("Out of Combat Alpha: %.2f", value) );
 
 	-- Preview update
-	ThreeRuneBars:Config_SetOOCAlpha(value);
+	OneRuneBar:Config_SetOOCAlpha(value);
 end
 
--- add Options to TRB
-ThreeRuneBars.Options = TRB_Options;
+-- add Options to ORB
+OneRuneBar.Options = ORB_Options;
 
 ---
 --- Slash handling
 ---
-SLASH_TRB1, SLASH_TRB2 = "/trb", "/ThreeRuneBars";
+SLASH_ORB1, SLASH_ORB2 = "/orb", "/onerunebar";
 
-local function TRB_SlashHandler(msg, editbox)
+local function ORB_SlashHandler(msg, editbox)
 
---	InterfaceOptionsFrame_OpenToCategory(TRB_Options.panel);
+--	InterfaceOptionsFrame_OpenToCategory(ORB_Options.panel);
 --	return;
 
 	if(msg == "config") then
-		InterfaceOptionsFrame_OpenToCategory(TRB_Options.panel.name);
-		InterfaceOptionsFrame_OpenToCategory(TRB_Options.panel.name);
+		InterfaceOptionsFrame_OpenToCategory(ORB_Options.panel.name);
+		InterfaceOptionsFrame_OpenToCategory(ORB_Options.panel.name);
 	elseif( not msg or msg=="" or msg=="lock" or msg=="unlock" ) then
-		if( ThreeRuneBars.isLocked ) then
-			ThreeRuneBars:Unlock();
+		if( OneRuneBar.isLocked ) then
+			OneRuneBar:Unlock();
 		else
-			ThreeRuneBars:Lock();
+			OneRuneBar:Lock();
 		end
 	else
 		DEFAULT_CHAT_FRAME:AddMessage("Usage:");
-		DEFAULT_CHAT_FRAME:AddMessage(" /trb - Lock/Unlock");
-		DEFAULT_CHAT_FRAME:AddMessage(" /trb config - Open configuration.");
+		DEFAULT_CHAT_FRAME:AddMessage(" /orb - Lock/Unlock");
+		DEFAULT_CHAT_FRAME:AddMessage(" /orb config - Open configuration.");
 	end
 
 end
-SlashCmdList["TRB"] = TRB_SlashHandler;
+SlashCmdList["ORB"] = ORB_SlashHandler;

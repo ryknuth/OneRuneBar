@@ -11,24 +11,24 @@ local IconGap = 2;
 
 ------------------------------------------------------------------------
 
-TRB_Diseases = TRB_Module:create("Diseases");
+ORB_Diseases = ORB_Module:create("Diseases");
 -- Register Disease module
-ThreeRuneBars:RegisterModule(TRB_Diseases);
+OneRuneBar:RegisterModule(ORB_Diseases);
 ------------------------------------------------------------------------
 
-function TRB_Diseases:OnDisable()
+function ORB_Diseases:OnDisable()
 	self.frame:SetScript("OnEvent", nil);
 	self.frame:SetScript("OnUpdate", nil);
 end
 
-function TRB_Diseases:getDefault(val)
+function ORB_Diseases:getDefault(val)
 	if( val == "Position" ) then
 		return { "CENTER", nil, "CENTER", 160, -25 };
 	end
 	return nil;
 end
 
-function TRB_Diseases:CreateFrame()
+function ORB_Diseases:CreateFrame()
 	local f = CreateFrame("frame", nil, UIParent);
 
 	-- Set Position and size
@@ -55,7 +55,7 @@ function TRB_Diseases:CreateFrame()
 	self.DiseaseBar = bar;
 end
 
-function TRB_Diseases:PositionFrame()
+function ORB_Diseases:PositionFrame()
 	local borderSize = self:Config_GetBorderSize();
 	local barSize = self:Config_GetBarSize();
 	local iconSize = self:Config_GetIconSize();
@@ -79,7 +79,7 @@ function TRB_Diseases:PositionFrame()
 	self:UpdateBorderSizes( self.DiseaseBarContainer );
 end
 
-function TRB_Diseases:OnEnable()
+function ORB_Diseases:OnEnable()
 	if( not self.frame ) then
 		self:CreateFrame();
 	end
@@ -103,29 +103,29 @@ function TRB_Diseases:OnEnable()
 	self.frame:Hide();
 end
 
-function TRB_Diseases:PLAYER_SPECIALIZATION_CHANGED()
+function ORB_Diseases:PLAYER_SPECIALIZATION_CHANGED()
 	self:UpdateDiseaseNameAndIcon();
 end
 
-function TRB_Diseases:UpdateDiseaseNameAndIcon()
+function ORB_Diseases:UpdateDiseaseNameAndIcon()
 	local specId = GetSpecialization();
 	if( not specId ) then return; end
 	if ( specId == 1 ) then
 		self.icon:SetTexture(BP_Icon);
 		self.DiseaseBar.id = "Blood Plague";
-		self.DiseaseBar:SetStatusBarColor( TRB_Config[self.name].Colors["bp"][1], TRB_Config[self.name].Colors["bp"][2], TRB_Config[self.name].Colors["bp"][3] );
+		self.DiseaseBar:SetStatusBarColor( ORB_Config[self.name].Colors["bp"][1], ORB_Config[self.name].Colors["bp"][2], ORB_Config[self.name].Colors["bp"][3] );
 	elseif( specId == 2 ) then
 		self.icon:SetTexture(FF_Icon);
 		self.DiseaseBar.id = "Frost Fever";
-		self.DiseaseBar:SetStatusBarColor( TRB_Config[self.name].Colors["ff"][1], TRB_Config[self.name].Colors["ff"][2], TRB_Config[self.name].Colors["ff"][3] );
+		self.DiseaseBar:SetStatusBarColor( ORB_Config[self.name].Colors["ff"][1], ORB_Config[self.name].Colors["ff"][2], ORB_Config[self.name].Colors["ff"][3] );
 	else
 		self.icon:SetTexture(VP_Icon);
 		self.DiseaseBar.id = "Virulent Plague";
-		self.DiseaseBar:SetStatusBarColor( TRB_Config[self.name].Colors["vp"][1], TRB_Config[self.name].Colors["vp"][2], TRB_Config[self.name].Colors["vp"][3] );
+		self.DiseaseBar:SetStatusBarColor( ORB_Config[self.name].Colors["vp"][1], ORB_Config[self.name].Colors["vp"][2], ORB_Config[self.name].Colors["vp"][3] );
 	end
 end
 
-function TRB_Diseases:UpdateDiseaseBar()
+function ORB_Diseases:UpdateDiseaseBar()
 	local bar = self.DiseaseBar;
 
 	local found = false;
@@ -157,7 +157,7 @@ function TRB_Diseases:UpdateDiseaseBar()
 	end
 end
 
-function TRB_Diseases:showBars(v)
+function ORB_Diseases:showBars(v)
 	if(v) then
 		self.frame:Show();
 		self.needUpdate = true;
@@ -168,10 +168,10 @@ function TRB_Diseases:showBars(v)
 	end
 end
 
-function TRB_Diseases:UNIT_AURA(unit)
+function ORB_Diseases:UNIT_AURA(unit)
 end
 
-function TRB_Diseases:PLAYER_TARGET_CHANGED()
+function ORB_Diseases:PLAYER_TARGET_CHANGED()
 	if( UnitExists("target")) then
 		self:showBars(true);
 	else
@@ -179,7 +179,7 @@ function TRB_Diseases:PLAYER_TARGET_CHANGED()
 	end
 end
 
-function TRB_Diseases:OnUpdate(elapsed)
+function ORB_Diseases:OnUpdate(elapsed)
 	self.last = self.last + elapsed;
 
 	if( self.last > 0.01 ) then
@@ -191,7 +191,7 @@ function TRB_Diseases:OnUpdate(elapsed)
 	end
 end
 
-function TRB_Diseases:SetBarTexture(texture)
+function ORB_Diseases:SetBarTexture(texture)
 	self.cfg.Texture = texture;
 
 	if( not SM ) then
@@ -203,7 +203,7 @@ function TRB_Diseases:SetBarTexture(texture)
 	self.DiseaseBar:GetStatusBarTexture():SetVertTile(false);
 end
 
-function TRB_Diseases:OnInitOptions(panel, bottomObject)
+function ORB_Diseases:OnInitOptions(panel, bottomObject)
 	local btn, tex = self:CreateColorButtonOption(panel, "FFever");
 	btn:SetPoint( "LEFT", self.TextureDD, "RIGHT", 20, 0 );
 	local btn2, tex2 = self:CreateColorButtonOption(panel, "BPlague");
@@ -214,52 +214,52 @@ function TRB_Diseases:OnInitOptions(panel, bottomObject)
 	local iconSizeLabel = self:CreateLabel( panel, "Icon Size:");
 	iconSizeLabel:SetPoint("TOPLEFT", bottomObject, "BOTTOMLEFT", 0, -20);
 	
-	local barHeightBox = self:CreateEditBox( panel, "TRB_IconSizeEditBox"..self.name,
+	local barHeightBox = self:CreateEditBox( panel, "ORB_IconSizeEditBox"..self.name,
 		function(self) return self:Config_GetIconSize(); end,
 		function(self, value) self:Config_SetIconSize(value); end );
 	barHeightBox:SetPoint("TOPLEFT", iconSizeLabel, "TOPRIGHT", 4, 0);
 	barHeightBox:SetPoint("BOTTOMLEFT", iconSizeLabel, "BOTTOMRIGHT", 0, 0);
 end
 
-function TRB_Diseases:GetConfigColor(module, name)
+function ORB_Diseases:GetConfigColor(module, name)
 	if( name == "FFever" ) then
-		if( not TRB_Config[module.name].Colors["ff"] ) then
-			TRB_Config[module.name].Colors["ff"] = TRB_Config_Defaults[module.name].Colors["ff"];
+		if( not ORB_Config[module.name].Colors["ff"] ) then
+			ORB_Config[module.name].Colors["ff"] = ORB_Config_Defaults[module.name].Colors["ff"];
 		end
-		return unpack(TRB_Config[module.name].Colors["ff"]);
+		return unpack(ORB_Config[module.name].Colors["ff"]);
 	elseif( name == "BPlague" ) then
-		if( not TRB_Config[module.name].Colors["bp"] ) then
-			TRB_Config[module.name].Colors["bp"] = TRB_Config_Defaults[module.name].Colors["bp"];
+		if( not ORB_Config[module.name].Colors["bp"] ) then
+			ORB_Config[module.name].Colors["bp"] = ORB_Config_Defaults[module.name].Colors["bp"];
 		end
-		return unpack(TRB_Config[module.name].Colors["bp"]);
+		return unpack(ORB_Config[module.name].Colors["bp"]);
 	elseif( name == "VPlague" ) then
-		if( not TRB_Config[module.name].Colors["vp"] ) then
-			TRB_Config[module.name].Colors["vp"] = TRB_Config_Defaults[module.name].Colors["vp"];
+		if( not ORB_Config[module.name].Colors["vp"] ) then
+			ORB_Config[module.name].Colors["vp"] = ORB_Config_Defaults[module.name].Colors["vp"];
 		end
-		return unpack(TRB_Config[module.name].Colors["vp"]);
+		return unpack(ORB_Config[module.name].Colors["vp"]);
 	end
-	module:Print("TRB BUG: Didn't find color config name: "..name);
+	module:Print("ORB BUG: Didn't find color config name: "..name);
 end
 
-function TRB_Diseases:SetBarColor(module, name, r, g, b)
+function ORB_Diseases:SetBarColor(module, name, r, g, b)
 	module.panel.barcolor[name]:SetColorTexture(r, g, b);
 
 	local newColor = {r, g, b, 1};
 	if( name == "FFever" ) then
-		TRB_Config[module.name].Colors["ff"] = newColor;
+		ORB_Config[module.name].Colors["ff"] = newColor;
 	elseif( name == "BPlague" ) then
-		TRB_Config[module.name].Colors["bp"] = newColor;
+		ORB_Config[module.name].Colors["bp"] = newColor;
 	elseif( name == "VPlague" ) then
-		TRB_Config[module.name].Colors["np"] = newColor;
+		ORB_Config[module.name].Colors["np"] = newColor;
 	end
 end
 
-function TRB_Module:Config_GetIconSize()
-	return TRB_Config[self.name].IconSize or TRB_Config_Defaults[self.name].IconSize;
+function ORB_Module:Config_GetIconSize()
+	return ORB_Config[self.name].IconSize or ORB_Config_Defaults[self.name].IconSize;
 end
 
-function TRB_Module:Config_SetIconSize(val)
-	TRB_Config[self.name].IconSize = val;
+function ORB_Module:Config_SetIconSize(val)
+	ORB_Config[self.name].IconSize = val;
 
 	self:PositionFrame();
 end

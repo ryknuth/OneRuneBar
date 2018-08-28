@@ -4,9 +4,9 @@ end
 
 ------------------------------------------------------------------------
 
-ThreeRuneBars = CreateFrame("frame", nil, UIParent);
-ThreeRuneBars:RegisterEvent("ADDON_LOADED"); -- Wait for variables to load before we do anything
-ThreeRuneBars:SetScript("OnEvent", function(frame, event, ...) frame[event](frame, ...); end ); -- Event handling
+OneRuneBar = CreateFrame("frame", nil, UIParent);
+OneRuneBar:RegisterEvent("ADDON_LOADED"); -- Wait for variables to load before we do anything
+OneRuneBar:SetScript("OnEvent", function(frame, event, ...) frame[event](frame, ...); end ); -- Event handling
 
 -- For bar textures
 SM = nil;
@@ -14,7 +14,7 @@ if( LibStub and LibStub.GetLibrary ) then
 	SM = LibStub:GetLibrary("LibSharedMedia-3.0");
 end
 
-function ThreeRuneBars:UpdateCombatFading()
+function OneRuneBar:UpdateCombatFading()
 	local value = self:Config_GetOOCAlpha();
 
 	-- In combat it should be fully visible
@@ -28,7 +28,7 @@ function ThreeRuneBars:UpdateCombatFading()
 	end
 end
 
-function ThreeRuneBars:PLAYER_REGEN_ENABLED()
+function OneRuneBar:PLAYER_REGEN_ENABLED()
 	-- out of combat
 	self.inCombat = nil;
 
@@ -41,7 +41,7 @@ function ThreeRuneBars:PLAYER_REGEN_ENABLED()
 	end
 end
 
-function ThreeRuneBars:PLAYER_REGEN_DISABLED()
+function OneRuneBar:PLAYER_REGEN_DISABLED()
 	-- in combat
 	self.inCombat = true;
 	
@@ -53,20 +53,20 @@ function ThreeRuneBars:PLAYER_REGEN_DISABLED()
 	end
 end
 
-function ThreeRuneBars:PET_BATTLE_OPENING_START()
+function OneRuneBar:PET_BATTLE_OPENING_START()
 	for name, m in pairs(self.modules) do
 		m:ChangeVisibility( false );
 	end
 end
 
-function ThreeRuneBars:PET_BATTLE_OVER()
+function OneRuneBar:PET_BATTLE_OVER()
 	for name, m in pairs(self.modules) do
 		m:ChangeVisibility( true );
 	end
 end
 
-function ThreeRuneBars:Unlock()
-	DEFAULT_CHAT_FRAME:AddMessage("ThreeRuneBars Unlocked");
+function OneRuneBar:Unlock()
+	DEFAULT_CHAT_FRAME:AddMessage("OneRuneBar Unlocked");
 	self.isLocked = false;
 	
 	for name, m in pairs(self.modules) do
@@ -76,8 +76,8 @@ function ThreeRuneBars:Unlock()
 	end
 end
 
-function ThreeRuneBars:Lock()
-	DEFAULT_CHAT_FRAME:AddMessage("ThreeRuneBars Locked");
+function OneRuneBar:Lock()
+	DEFAULT_CHAT_FRAME:AddMessage("OneRuneBar Locked");
 	self.isLocked = true;
 	for name, m in pairs(self.modules) do
 		if( m.moveFrame ) then
@@ -86,7 +86,7 @@ function ThreeRuneBars:Lock()
 	end
 end
 
-function ThreeRuneBars:RegisterModule(m)
+function OneRuneBar:RegisterModule(m)
 
 	local name = m.name;
 
@@ -95,13 +95,13 @@ function ThreeRuneBars:RegisterModule(m)
 	if( not self.modules[name]) then 
 		self.modules[name] = m;
 	else
-		DEFAULT_CHAT_FRAME:AddMessage("TRB: Module "..name.." already registered");
+		DEFAULT_CHAT_FRAME:AddMessage("ORB: Module "..name.." already registered");
 	end
 end
 
-function ThreeRuneBars:StartModules()
+function OneRuneBar:StartModules()
 	for name, m in pairs(self.modules) do
-		if( not (TRB_Config.disabled_modules and TRB_Config.disabled_modules[name] and TRB_Config.disabled_modules[name] == true) ) then
+		if( not (ORB_Config.disabled_modules and ORB_Config.disabled_modules[name] and ORB_Config.disabled_modules[name] == true) ) then
 			m:init();
 			m:LoadPosition();
 		else
@@ -110,19 +110,19 @@ function ThreeRuneBars:StartModules()
 	end
 end
 
-function ThreeRuneBars:ADDON_LOADED(addon)
-	if( string.lower(addon) == string.lower("ThreeRuneBars") and (select(2, UnitClass("player")) == "DEATHKNIGHT")) then
+function OneRuneBar:ADDON_LOADED(addon)
+	if( string.lower(addon) == string.lower("OneRuneBar") and (select(2, UnitClass("player")) == "DEATHKNIGHT")) then
 		--
 		--	And finally the addon and it's variables has been loaded and we can start doing stuff
 		--	
-		DEFAULT_CHAT_FRAME:AddMessage("ThreeRuneBars loaded");
+		DEFAULT_CHAT_FRAME:AddMessage("OneRuneBar loaded");
 		
-		--	Start locked, otherwise we are in an unknown state where the first /trb will
+		--	Start locked, otherwise we are in an unknown state where the first /ORB will
 		--	lock the bars, even though they were already locked.
 		self:Lock();
 		
 		if( self.Options ) then
-			self.Options:init();	-- Initialize TRB's Option frame and LoadConfig
+			self.Options:init();	-- Initialize ORB's Option frame and LoadConfig
 		end
 		
 		-- Start sub modules like Runes, RunicPower and Diseases
@@ -139,12 +139,12 @@ function ThreeRuneBars:ADDON_LOADED(addon)
 	end
 end
 
-function ThreeRuneBars:Config_GetOOCAlpha()
-	return TRB_Config.OOC_Alpha or TRB_Config_Defaults.OOC_Alpha;
+function OneRuneBar:Config_GetOOCAlpha()
+	return ORB_Config.OOC_Alpha or ORB_Config_Defaults.OOC_Alpha;
 end
 
-function ThreeRuneBars:Config_SetOOCAlpha(val)
-	TRB_Config.OOC_Alpha = val;
+function OneRuneBar:Config_SetOOCAlpha(val)
+	ORB_Config.OOC_Alpha = val;
 
 	self:UpdateCombatFading();
 end
