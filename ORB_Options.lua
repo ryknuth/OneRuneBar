@@ -11,7 +11,12 @@ function ORB_Options:init()
 	-- Make sure we have our configuration available
 	--
 	if ( not ORB_Config ) then
-		self:ResetConfig();
+		if( TRB_Config ) then
+			ORB_Config = TRB_Config;
+			TRB_Config = nil;
+		else
+			self:ResetConfig();
+		end
 	end
 
 	--

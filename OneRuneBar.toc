@@ -2,7 +2,7 @@
 ## Title: One Rune Bar
 ## Author: istandalonetoo
 ## Version: 8.0.2
-## SavedVariables: ORB_Config
+## SavedVariables: ORB_Config, TRB_Config
 ## Notes: Simple 1 Rune bar display. Combines all 6 runes into one energy like bar.
 ## OptionalDeps: LibSharedMedia-3.0
 ## X-Curse-Packaged-Version: 8.0.0

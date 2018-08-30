@@ -127,7 +127,7 @@ function OneRuneBar:ADDON_LOADED(addon)
 
 		if( not ORB_Config.SeenTRBTransition ) then
 			StaticPopupDialogs["TRB_TRANSITION_POPUP"] = {
-				text = "Thank you for using One Rune Bar! If you previously used ThreeRuneBars, please take a moment to copy over your saved variables. First, copy these instructions and logout. Second, Navigate to your World of Warcraft installation folder, then navigate to WTF/Account/<your account name>/SavedVariables. Third, delete any existing OneRuneBar.lua file and rename ThreeRuneBars.lua to OneRuneBar.lua. Fourth, disable ThreeRuneBars in the addon config within World of Warcraft and log back in. Everything should be as it was!",
+				text = "Thank you for using One Rune Bar! If you previously used ThreeRuneBars, please take a moment to copy over your saved variables. First, copy these instructions and logout. Second, Navigate to your World of Warcraft installation folder, then navigate to WTF/Account/<your account name>/SavedVariables. Third, delete any existing OneRuneBar.lua file and rename ThreeRuneBars.lua to OneRuneBar.lua. Everything should be as it was!",
 				button1 = "OK",
 				button2 = "Show Again",
 				OnAccept = function()
