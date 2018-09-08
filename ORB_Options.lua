@@ -31,29 +31,40 @@ function ORB_Options:init()
 	-- Main panel
 	--
 	local xoff, yoff = 20, -20;
-	
+
 	local header = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge");
 	header:SetPoint("TOPLEFT", panel, "TOPLEFT", xoff, yoff);
 	header:SetText(panel.name.." v"..GetAddOnMetadata("Onerunebar", "Version") );
 	panel.header = header;
-	
+
+	local function createSlider(name, textFormat, yoffset, getter, setter)
+		local slider = CreateFrame("slider", name, panel, "OptionsSliderTemplate");
+		slider:SetPoint("TOPLEFT", panel, "TOPLEFT", xoff, yoff+yoffset);
+		slider:SetWidth(200);
+		slider:SetHeight(20);
+		slider:SetOrientation("HORIZONTAL");
+		slider:SetMinMaxValues(0, 1.0);
+		slider:SetValue(1);
+		slider:SetValueStep(0.05);
+		_G[slider:GetName().."Low"]:SetText("0.0");
+		_G[slider:GetName().."High"]:SetText("1.0");
+		slider.Text = _G[slider:GetName().."Text"];
+
+		slider:SetScript("OnValueChanged", function(self, value)
+			self.Text:SetText(format(textFormat, value))
+			setter(OneRuneBar, value);
+		end);
+
+		slider:SetValue(getter(OneRuneBar));
+		return slider;
+	end
+
 	-- OOC Alpha
-	local OOCSlider = CreateFrame("slider", "ORB_OOCSlider", panel, "OptionsSliderTemplate");
-	OOCSlider:SetPoint("TOPLEFT", panel, "TOPLEFT", xoff, yoff-50);
-	OOCSlider:SetWidth(200);
-	OOCSlider:SetHeight(20);
-	OOCSlider:SetOrientation("HORIZONTAL");
-	OOCSlider:SetMinMaxValues(0, 1.0);
-	OOCSlider:SetValue(1);
-	OOCSlider:SetValueStep(0.05);
-	_G[OOCSlider:GetName().."Low"]:SetText("0.0");
-	_G[OOCSlider:GetName().."High"]:SetText("1.0");
-	OOCSlider.Text = _G[OOCSlider:GetName().."Text"];
-	OOCSlider:SetScript("OnValueChanged", function(self, value) ORB_Options:SetOOCAlphaValue(self, value); end);
-	OOCSlider:SetValue(OneRuneBar:Config_GetOOCAlpha());
-	OOCSlider.Text:SetText( format("Out of Combat Alpha: %.2f", OOCSlider:GetValue()) );
-	self.OOCSlider = OOCSlider;
-	
+	self.OOCSlider = createSlider("ORB_OOCSlider", "Out of Combat (OOC) alpha: %.2f",
+		-50, OneRuneBar.Config_GetOOCAlpha, OneRuneBar.Config_SetOOCAlpha);
+	self.OOCNotAllReadySlider = createSlider("ORB_OOCNotAllReadySlider", "OOC alpha while still recharging %.2f",
+		-100, OneRuneBar.Config_GetOOCNotAllReadyAlpha, OneRuneBar.Config_SetOOCNotAllReadyAlpha);
+
 	--
 	-- Add panel to blizzards addon config
 	--
@@ -107,13 +118,6 @@ function ORB_Options:Default()
 			m:_OnDefault();
 		end
 	end
-end
-
-function ORB_Options:SetOOCAlphaValue(slider, value)
-	slider.Text:SetText(format("Out of Combat Alpha: %.2f", value) );
-
-	-- Preview update
-	OneRuneBar:Config_SetOOCAlpha(value);
 end
 
 -- add Options to ORB
