@@ -18,7 +18,9 @@ function OneRuneBar:UpdateCombatFading()
 	local value = self:Config_GetOOCAlpha();
 
 	-- In combat it should be fully visible
-	if( self.inCombat ) then value = 1.0; end
+	if( self.inCombat ) then value = 1.0;
+	-- OOC, but not all runes ready
+	elseif ( not ORB_Runes:AreAllReady() ) then value = self:Config_GetOOCNotAllReadyAlpha(); end
 
 	-- Update alpha value for modules
 	for name, m in pairs(self.modules) do
@@ -161,8 +163,18 @@ function OneRuneBar:Config_GetOOCAlpha()
 	return ORB_Config.OOC_Alpha or ORB_Config_Defaults.OOC_Alpha;
 end
 
+function OneRuneBar:Config_GetOOCNotAllReadyAlpha()
+	return ORB_Config.OOC_NotAllReadyAlpha or ORB_Config_Defaults.OOC_NotAllReadyAlpha;
+end
+
 function OneRuneBar:Config_SetOOCAlpha(val)
 	ORB_Config.OOC_Alpha = val;
+
+	self:UpdateCombatFading();
+end
+
+function OneRuneBar:Config_SetOOCNotAllReadyAlpha(val)
+	ORB_Config.OOC_NotAllReadyAlpha = val;
 
 	self:UpdateCombatFading();
 end

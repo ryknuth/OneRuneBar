@@ -175,6 +175,15 @@ function ORB_Runes:UpdateRuneInfoTable()
 	end
 end
 
+function ORB_Runes:AreAllReady()
+	for runeIndex=1,6 do
+		local start, duration, ready = GetRuneCooldown( runeIndex );
+		if( not ready ) then return false end;
+	end
+	return true;
+end
+
+
 function ORB_sort(t)
 	local itemCount = #t;
 
@@ -207,6 +216,12 @@ end
 function ORB_Runes:UpdateFullBar()
 	self:UpdateRuneInfoTable();
 	self:SortRuneInfos();
+
+	local previousAllReadyState = self.allReadyState;
+	self.allReadyState = self:AreAllReady();
+	if (self.allReadyState ~= previousAllReadyState) then
+		OneRuneBar:UpdateCombatFading();
+	end
 
 	for runeIndex=1, 6 do
 		local oldValue = self.Runes[runeIndex]:GetValue();
