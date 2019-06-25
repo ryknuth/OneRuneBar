@@ -163,7 +163,8 @@ function ORB_Module:LoadPosition()
 	if( not self.frame ) then return; end -- if no frame exists no position exists.
 
 	if( self.cfg and self.cfg.Position ) then
-		self.frame:SetPoint( unpack(self.cfg.Position) );
+		local p, _, _, ox, oy = unpack(self.cfg.Position);
+		self.frame:SetPoint( p, ox, oy );
 	else
 		self:Error("Failed to load position for module "..self.name);
 	end
