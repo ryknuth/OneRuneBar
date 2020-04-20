@@ -1,4 +1,4 @@
-## Interface: 80200
+## Interface: 80300
 ## Title: One Rune Bar
 ## Author: istandalonetoo
 ## Version: 8.2.0

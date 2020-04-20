@@ -165,7 +165,10 @@ end
 function ORB_Runes:UpdateRuneInfoTable()
 	for runeIndex=1, 6 do
 		local start, duration, ready = GetRuneCooldown( runeIndex );
-		local value = GetTime() - start;
+		if (not duration) then duration = 0 end;
+		if (not ready) then ready = 0 end;
+		local value = 0;
+		if (start) then value = GetTime() - start end;
 
 		if( not value or value < 0 ) then value = 0 end;
 
