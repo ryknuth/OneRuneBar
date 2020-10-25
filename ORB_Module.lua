@@ -33,6 +33,12 @@ function ORB_Module:create(name)
 	return n;
 end
 
+function ORB_Module:setConfig()
+	if( not self.cfg ) then
+		self.cfg = ORB_Config[self.name];
+	end
+end
+
 --
 -- Init the module, Modules should use Enable
 --
@@ -121,7 +127,7 @@ end
 
 function ORB_Module:Disable()
 	if( not self.isRunning ) then return; end -- Not running
-	
+
 	-- Hide frame and unregister all events
 	if( self.frame ) then
 		self.frame:Hide();
@@ -251,7 +257,7 @@ function ORB_Module:InitOptions(parent)
 			local OnClick = 
 				function(self)
 					UIDropDownMenu_SetSelectedID(self.owner, self:GetID());
-					if( self.owner.owner.SetBarTexture ) then self.owner.owner:SetBarTexture(self.value); end
+					if( self.owner.owner.SetBarTexture and self.isRunning ) then self.owner.owner:SetBarTexture(self.value); end
 				end;
 
 			local info = UIDropDownMenu_CreateInfo();

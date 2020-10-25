@@ -104,6 +104,7 @@ end
 
 function OneRuneBar:StartModules()
 	for name, m in pairs(self.modules) do
+		m:setConfig();
 		if( not (ORB_Config.disabled_modules and ORB_Config.disabled_modules[name] and ORB_Config.disabled_modules[name] == true) ) then
 			m:init();
 			m:LoadPosition();
