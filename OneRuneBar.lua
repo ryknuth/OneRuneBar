@@ -5,13 +5,14 @@ end
 ------------------------------------------------------------------------
 
 OneRuneBar = CreateFrame("frame", nil, UIParent);
-OneRuneBar:RegisterEvent("ADDON_LOADED"); -- Wait for variables to load before we do anything
+OneRuneBar:RegisterEvent("ADDON_LOADED"); -- Wait for variables to load before initializing
+OneRuneBar:RegisterEvent("PLAYER_LOGIN"); -- Wait for variables to load before enabling
 OneRuneBar:SetScript("OnEvent", function(frame, event, ...) frame[event](frame, ...); end ); -- Event handling
 
 -- For bar textures
 SM = nil;
 if( LibStub and LibStub.GetLibrary ) then
-	SM = LibStub:GetLibrary("LibSharedMedia-3.0");
+	SM = LibStub:GetLibrary("LibSharedMedia-3.0", true);
 end
 
 function OneRuneBar:UpdateCombatFading()
@@ -156,6 +157,16 @@ function OneRuneBar:ADDON_LOADED(addon)
 
 		-- Update OOC and FrameStrata state
 		self:PLAYER_REGEN_ENABLED();
+	end
+end
+
+function OneRuneBar:PLAYER_LOGIN()
+	for name, m in pairs(self.modules) do
+		if( not (ORB_Config.disabled_modules and ORB_Config.disabled_modules[name] and ORB_Config.disabled_modules[name] == true) ) then
+			if(m.cfg.Texture) then
+				m:SetBarTexture(m.cfg.Texture);
+			end
+		end
 	end
 end
 

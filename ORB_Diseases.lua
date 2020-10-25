@@ -79,7 +79,7 @@ function ORB_Diseases:PositionFrame()
 	self:UpdateBorderSizes( self.DiseaseBarContainer );
 end
 
-function ORB_Diseases:OnEnable()
+function ORB_Diseases:OnInit()
 	if( not self.frame ) then
 		self:CreateFrame();
 	end

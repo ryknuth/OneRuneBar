@@ -79,7 +79,7 @@ function ORB_Runes:PositionFrame()
 	self:UpdateBorderSizes( self.frame );
 end
 
-function ORB_Runes:OnEnable()
+function ORB_Runes:OnInit()
 	if( not self.frame ) then
 		self:CreateFrame();
 	end

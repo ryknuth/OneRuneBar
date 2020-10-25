@@ -58,7 +58,7 @@ function ORB_RunicPower:PositionFrame()
 	self:UpdateBorderSizes( self.frame );
 end
 
-function ORB_RunicPower:OnEnable()
+function ORB_RunicPower:OnInit()
 	if( not self.frame ) then
 		self:CreateFrame();
 	end

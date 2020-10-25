@@ -23,7 +23,7 @@ end
 -- Create a module.
 -- Use:
 -- local myModule = ORB_Module:create("SomeName");
--- function myModule:OnEnable() (do stuff) end
+-- function myModule:OnInit() (do stuff) end
 -- OneRuneBar:RegisterModule(myModule);
 --
 function ORB_Module:create(name)
@@ -44,7 +44,7 @@ function ORB_Module:init()
 	end
 
 	-- Now we are ready to enable this module
-	if( self.OnEnable ) then self:OnEnable(); end
+	if( self.OnInit ) then self:OnInit(); end
 	
 	self.isRunning = true;
 	self:Print((self.name or "Unknown").." module enabled.");
